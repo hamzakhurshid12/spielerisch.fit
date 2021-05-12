@@ -1,0 +1,44 @@
+{
+  "@@last_modified": "2019-06-27T23:38:38.868199",
+  "heyWorld": "Hey Welt",
+  "@heyWorld": {
+    "description": "Einfaches Wort zur Begrüßung",
+    "type": "text",
+    "placeholders": {}
+  },
+  "pushforyourluck": "DRÜCK DEIN GLÜCK\nBLEIBE",
+  "@pushforyourluck": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "start": "START",
+  "@start": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "stop": "STOP",
+  "@stop": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "stopwatch": "STOPPUHR",
+  "@stopwatch": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "timer": "TIMER",
+  "@timer": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "seconds": "Sekunden",
+  "@seconds": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "times": "Stück",
+  "@times": {
+    "type": "text",
+    "placeholders": {}
+  }
+}

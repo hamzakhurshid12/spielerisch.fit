@@ -1,0 +1,44 @@
+{
+  "@@last_modified": "2021-05-11T18:07:20.029450",
+  "heyWorld": "Hey World",
+  "@heyWorld": {
+    "description": "Simpel word for greeting ",
+    "type": "text",
+    "placeholders": {}
+  },
+  "pushforyourluck": "PUSH YOUR LUCK\nAND STAY\nPLAYFUL.FIT",
+  "@pushforyourluck": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "start": "START",
+  "@start": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "stop": "STOP",
+  "@stop": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "stopwatch": "STOPWATCH",
+  "@stopwatch": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "timer": "TIMER",
+  "@timer": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "seconds": "seconds",
+  "@seconds": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "times": "times",
+  "@times": {
+    "type": "text",
+    "placeholders": {}
+  }
+}

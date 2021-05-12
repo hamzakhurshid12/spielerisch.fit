@@ -1,0 +1,588 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:roller_list/roller_list.dart';
+import 'package:spielerisch_fit/locale/app_localization.dart';
+import 'package:spielerisch_fit/utils/ColorsHelper.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+import 'package:spielerisch_fit/main.dart';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
+import 'package:spielerisch_fit/utils/exercises_data.dart';
+
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title, this.analytics, this.observer})
+      : super(key: key);
+
+  final String title;
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+  bool isMachineRunning = false;
+  bool isMachineDirty = false;
+  var VALUES = [35, 40, 10, 45, 15, 50, 20, 55, 25, 60, 30];
+  var TIMESSECONDS;
+
+  final leftRoller = new GlobalKey<RollerListState>();
+  final middleRoller = new GlobalKey<RollerListState>();
+  final rightRoller = new GlobalKey<RollerListState>();
+  Timer rotator;
+  Random _random = new Random();
+  static const _ROTATION_DURATION = Duration(milliseconds: 5000);
+
+  List<Widget> values;
+  List<Widget> timesseconds;
+  List<Widget> excercisesRollerItems;
+
+  List jsonKeys;
+
+  List<Exercise> chosenLanguageRecords;
+
+  double screenWidth;
+  double screenHeight;
+
+  int selectedDuration;
+  String selectedTimesSeconds;
+  Exercise selectedExercise;
+
+  String clockCaption = "";
+  String clockDuration = "";
+
+  Timer stopWatchTimer;
+  String clockType = "stopwatch";
+
+  GlobalKey machineKey;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification notification = message.notification;
+      AndroidNotification android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channel.description,
+                icon: "ic_launcher",
+              ),
+            ));
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+    });
+
+    clockCaption = AppLocalization.of(MyApp.navKey.currentContext).stopwatch;
+    clockDuration = "00 : 00 : 00 : 00";
+
+    chosenLanguageRecords = AppLocalization.chosenLanguageCode == "de_DE"
+        ? ExercisesData.dataRecordsDe
+        : ExercisesData.dataRecordsEn;
+    excercisesRollerItems = chosenLanguageRecords
+        .map((e) => Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Center(
+                child: Text(
+                  e.shortname
+                      .replaceAll("<br/>", "\n")
+                      .replaceAll("</br>", "\n")
+                      .replaceAll("<br>", "\n"),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: ColorHelper.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ))
+        .toList();
+
+    excercisesRollerItems.insert(
+        0,
+        Padding(
+          padding: EdgeInsets.all(2.0),
+          child: Image.asset(
+            "assets/images/slotmachine-start-overlay.png",
+          ),
+        ));
+
+    values = VALUES
+        .map((val) => Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Center(
+                child: Text(
+                  val.toString(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: ColorHelper.red,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ))
+        .toList();
+
+    values.insert(
+        0,
+        Padding(
+          padding: EdgeInsets.all(2.0),
+          child: Image.asset(
+            "assets/images/slotmachine-start-overlay.png",
+          ),
+        ));
+
+    TIMESSECONDS = [
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times
+    ];
+    timesseconds = TIMESSECONDS
+        .map<Widget>((val) => Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Center(
+                child: Text(
+                  val,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: ColorHelper.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ))
+        .toList();
+    timesseconds.insert(
+        0,
+        Padding(
+          padding: EdgeInsets.all(2.0),
+          child: Image.asset(
+            "assets/images/slotmachine-start-overlay.png",
+          ),
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    double machineWidth = screenWidth;
+    double machineHeight = machineWidth * 1.06;
+    return Scaffold(
+      backgroundColor: ColorHelper.backgroundCyan,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
+                    AppLocalization.of(context).pushforyourluck,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Open-Sans",
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16),
+                    textAlign: TextAlign.center,
+                  )),
+              AppLocalization.chosenLanguageCode == "de_DE"
+                  ? Padding(
+                      padding: EdgeInsets.only(top: 0),
+                      child: SizedBox(
+                          height: 40,
+                          child: Image.asset(
+                              "assets/images/logo-spielerisch-fit.png")),
+                    )
+                  : Container(),
+              Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: _slotMachine(machineWidth, machineHeight),
+              ),
+              selectedExercise == null
+                  ? Container()
+                  : Padding(
+                      padding: EdgeInsets.all(machineWidth * 0.04),
+                      child: Text(
+                        "20 Stück\nSchulter-Acht",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "Open-Sans",
+                            fontWeight: FontWeight.w200,
+                            fontSize: 22),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: machineWidth * 0.04),
+                child: Text(
+                  "Strecke aufrecht stehend deinen rechten Arm nach vorne. Mach eine Faust und zeichne nun mit ausgestrecktem Arm Achter in die Luft. Mach die Sekunden/Stück je einmal pro Seite.",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "Open-Sans",
+                      fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              isMachineDirty
+                  ? Padding(
+                      padding: EdgeInsets.all(machineWidth * 0.04),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            child: SizedBox(
+                              height: 24,
+                              width: 24,
+                              child:
+                                  Image.asset("assets/images/reload_icon.png"),
+                            ),
+                            onTap: () {
+                              machineOnTap();
+                            },
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _slotMachine(double machineWidth, double machineHeight) {
+    return Stack(
+      children: [
+        // ----------------- Machine ----------------------------------//
+        SizedBox(
+          width: machineWidth,
+          height: machineHeight,
+          child: GestureDetector(
+            child: Image.asset(isMachineRunning
+                ? "assets/images/spinner-big-running.png"
+                : "assets/images/spinner-big.png"),
+            onTap: () {
+              machineOnTap();
+            },
+          ),
+        ),
+
+        // -----------------Left Roller----------------------------------//
+        Positioned(
+          top: machineHeight * 0.255,
+          left: machineWidth * 0.23,
+          child: RollerList(
+            height: machineHeight * 0.14,
+            width: machineWidth * 0.14,
+            items: values,
+            initialIndex: 1,
+            dividerThickness: 0.0,
+            visibilityRadius: 0.0,
+            scrollType: ScrollType.bothDirections,
+            key: leftRoller,
+            onSelectedIndexChanged: (value) {
+              _finishRotating();
+            },
+          ),
+        ),
+
+        // -----------------Center Roller----------------------------------//
+        Positioned(
+          top: machineHeight * 0.255,
+          left: machineWidth * 0.43,
+          child: RollerList(
+            height: machineHeight * 0.14,
+            width: machineWidth * 0.14,
+            items: timesseconds,
+            initialIndex: 1,
+            dividerThickness: 0.0,
+            visibilityRadius: 0.0,
+            scrollType: ScrollType.bothDirections,
+            key: middleRoller,
+            onSelectedIndexChanged: (value) {
+              _finishRotating();
+            },
+          ),
+        ),
+
+        // -----------------Right Roller----------------------------------//
+        Positioned(
+          top: machineHeight * 0.255,
+          left: machineWidth * 0.62,
+          child: RollerList(
+            height: machineHeight * 0.14,
+            width: machineWidth * 0.14,
+            items: excercisesRollerItems,
+            initialIndex: 1,
+            dividerThickness: 0.0,
+            visibilityRadius: 0.0,
+            scrollType: ScrollType.bothDirections,
+            key: rightRoller,
+            onSelectedIndexChanged: (value) {
+              _finishRotating();
+            },
+          ),
+        ),
+        // ----------------- Clock ----------------------------------//
+        Positioned.fill(
+          //Heading
+          top: machineHeight * 0.68,
+          child: Text(
+            clockCaption,
+            style: TextStyle(
+                color: Colors.white,
+                fontFamily: "Open-Sans",
+                fontWeight: FontWeight.w800,
+                fontSize: 14),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Positioned.fill(
+          // Timer
+          top: machineHeight * 0.73,
+          child: Text(
+            clockDuration,
+            style: TextStyle(
+                color: Color.fromRGBO(204, 204, 204, 1.0),
+                fontFamily: "Open-Sans",
+                fontWeight: FontWeight.w800,
+                fontSize: 20),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        // ----------------- Buttons ----------------------------------//
+        Positioned.fill(
+          //Buttons
+          top: machineHeight * 0.8,
+          left: machineWidth * 0.3,
+          child: Row(children: [
+            GestureDetector(
+              child: SizedBox(
+                width: machineWidth * 0.18,
+                height: machineHeight * 0.08,
+                child: Center(
+                  child: Text(
+                    clockType == "" ? "" : "START",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Open-Sans",
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              onTap: () {
+                /*TODO:IMPLEMENT*/
+                if (clockType == "stopwatch") {
+                  stopWatchTimer = getStopWatch();
+                } else {
+                  stopWatchTimer = getExerciseTimer();
+                }
+              },
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: machineWidth * 0.035),
+            ),
+            GestureDetector(
+              child: SizedBox(
+                width: machineWidth * 0.18,
+                height: machineHeight * 0.08,
+                child: Center(
+                  child: Text(
+                    clockType == "stopwatch"
+                        ? "STOP"
+                        : (clockType == "" ? "" : "RESET"),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Open-Sans",
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              onTap: () {
+                /*TODO:IMPLEMENT*/
+                if (stopWatchTimer != null) {
+                  stopWatchTimer.cancel();
+                  stopWatchTimer = null;
+                }
+                if (clockType != "stopwatch") setClockTimerValues();
+              },
+            ),
+          ]),
+        ),
+      ],
+    );
+  }
+
+  void _rotateRoller(final roller, int maxLimit, int rollerID) {
+    int selectedIndex = _random.nextInt(maxLimit);
+    final rotationTarget = selectedIndex + maxLimit * 3;
+    roller.currentState?.smoothScrollToIndex(rotationTarget,
+        duration: _ROTATION_DURATION, curve: Curves.elasticOut);
+    switch (rollerID) {
+      case 0:
+        selectedDuration = VALUES[selectedIndex];
+        break;
+      case 1:
+        selectedTimesSeconds = TIMESSECONDS[selectedIndex];
+        break;
+      case 2:
+        selectedExercise = chosenLanguageRecords[selectedIndex];
+        selectedExercise.shortname = selectedExercise.shortname
+            .replaceAll("<br/>", "\n")
+            .replaceAll("</br>", "\n")
+            .replaceAll("<br>", "\n");
+        break;
+    }
+  }
+
+  void _finishRotating() {
+    //rotator?.cancel();
+  }
+
+  Timer getStopWatch() {
+    NumberFormat formatter = new NumberFormat("00");
+    if (stopWatchTimer != null) {
+      stopWatchTimer.cancel();
+      stopWatchTimer = null;
+    }
+    int centiSeconds = 0;
+    return Timer.periodic(new Duration(milliseconds: 100), (Timer timer) {
+      centiSeconds += 10;
+      final int CENTISECONDS_IN_A_SECOND = 100;
+      final int SECONDS_IN_A_MINUTE = 60;
+      final int MINUTES_IN_AN_HOUR = 60;
+      int seconds = centiSeconds ~/ CENTISECONDS_IN_A_SECOND;
+      int minutes = seconds ~/ SECONDS_IN_A_MINUTE;
+      int hours = minutes ~/ MINUTES_IN_AN_HOUR;
+      setState(() {
+        clockDuration = formatter.format(hours % 24) +
+            " : " +
+            formatter.format(minutes % 60) +
+            " : " +
+            formatter.format(seconds % 60) +
+            " : " +
+            formatter.format(centiSeconds % 100);
+      });
+    });
+  }
+
+  Timer getExerciseTimer() {
+    if (selectedDuration == null) {
+      return null;
+    }
+    NumberFormat formatter = new NumberFormat("00");
+    if (stopWatchTimer != null) {
+      stopWatchTimer.cancel();
+      stopWatchTimer = null;
+    }
+    int remainingSeconds = selectedDuration;
+    int remaningDeciSeconds = remainingSeconds * 100;
+    return Timer.periodic(new Duration(milliseconds: 100), (Timer timer) {
+      if (remaningDeciSeconds == 0) {
+        timer.cancel();
+        return;
+      }
+      remaningDeciSeconds -= 10;
+      final int CENTISECONDS_IN_A_SECOND = 100;
+      int seconds = remaningDeciSeconds ~/ CENTISECONDS_IN_A_SECOND;
+      setState(() {
+        clockDuration = formatter.format(seconds) +
+            " : " +
+            formatter.format(remaningDeciSeconds % 100);
+      });
+    });
+  }
+
+  void setClockTimerValues() {
+    setState(() {
+      if (selectedDuration == null) {
+        clockDuration = "00 : 00 : 00 : 00";
+        return;
+      }
+      NumberFormat formatter = new NumberFormat("00");
+      clockDuration = clockType == "stopwatch"
+          ? "00 : 00 : 00 : 00"
+          : formatter.format(selectedDuration) + " : 00";
+    });
+  }
+
+  void machineOnTap() {
+    if (!this.isMachineRunning)
+      setState(() {
+        this.isMachineRunning = !this.isMachineRunning;
+        if (!isMachineDirty) {
+          isMachineDirty = true;
+          values.removeAt(0);
+          timesseconds.removeAt(0);
+          excercisesRollerItems.removeAt(0);
+        }
+        clockCaption = "";
+        clockDuration = "";
+        clockType = "";
+        _rotateRoller(leftRoller, VALUES.length, 0);
+        _rotateRoller(middleRoller, TIMESSECONDS.length, 1);
+        _rotateRoller(rightRoller, excercisesRollerItems.length, 2);
+        if (stopWatchTimer != null) {
+          stopWatchTimer.cancel();
+          stopWatchTimer = null;
+        }
+        new Timer.periodic(
+          //Machine running timer
+          _ROTATION_DURATION,
+          (Timer timer) {
+            setState(() {
+              this.isMachineRunning = !this.isMachineRunning;
+              print(selectedDuration);
+              print(selectedTimesSeconds);
+              print(selectedExercise);
+              timer.cancel();
+              clockType = selectedTimesSeconds ==
+                      AppLocalization.of(MyApp.navKey.currentContext).seconds
+                  ? "clock"
+                  : "stopwatch";
+              clockCaption = clockType == "stopwatch"
+                  ? AppLocalization.of(MyApp.navKey.currentContext).stopwatch
+                  : AppLocalization.of(MyApp.navKey.currentContext).timer;
+              setClockTimerValues();
+            });
+          },
+        );
+      });
+  }
+}

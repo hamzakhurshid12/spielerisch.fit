@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "796064904564",
+    "project_id": "spielerisch-fit",
+    "storage_bucket": "spielerisch-fit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796064904564:android:a0028425fb51823b6c6821",
+        "android_client_info": {
+          "package_name": "com.spielerisch.spielerisch_fit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796064904564-6cl74uq98lmreg9o5l1m3pqtsnbrm733.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtCtSPytw6fmOpuXeYwFfPUe2PNIM2qmI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "796064904564-6cl74uq98lmreg9o5l1m3pqtsnbrm733.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
