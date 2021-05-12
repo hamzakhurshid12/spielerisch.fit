@@ -204,113 +204,140 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: ColorHelper.backgroundCyan,
       body: SafeArea(
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Text(
-                    AppLocalization.of(context).pushforyourluck,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16),
-                    textAlign: TextAlign.center,
-                  )),
-              AppLocalization.chosenLanguageCode == "de_DE"
-                  ? Padding(
-                      padding: EdgeInsets.only(top: 0),
-                      child: SizedBox(
-                          height: 40,
-                          child: Image.asset(
-                              "assets/images/logo-spielerisch-fit.png")),
-                    )
-                  : Container(),
-              Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: _slotMachine(machineWidth, machineHeight),
-              ),
-              (selectedExercise == null || clockType == "")
-                  ? Container()
-                  : Padding(
-                      padding: EdgeInsets.all(machineWidth * 0.04),
+        child: Stack(
+          children: [
+            Positioned(
+              top:0.0,
+              left:0.0,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 20),
                       child: Text(
-                        selectedDuration.toString() +
-                            " " +
-                            selectedTimesSeconds +
-                            "\n" +
-                            selectedExercise.shortname.replaceAll("\n", " "),
+                        AppLocalization.of(context).pushforyourluck,
                         style: TextStyle(
                             color: Colors.white,
                             fontFamily: "Open-Sans",
-                            fontWeight: FontWeight.w200,
-                            fontSize: 22),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16),
                         textAlign: TextAlign.center,
-                      ),
+                      )),
+                  AppLocalization.chosenLanguageCode == "de_DE"
+                      ? Padding(
+                    padding: EdgeInsets.only(top: 0),
+                    child: SizedBox(
+                        height: 40,
+                        child: Image.asset(
+                            "assets/images/logo-spielerisch-fit.png")),
+                  )
+                      : Container(),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: _slotMachine(machineWidth, machineHeight),
+                  ),
+                  (selectedExercise == null || clockType == "")
+                      ? Container()
+                      : Padding(
+                    padding: EdgeInsets.all(machineWidth * 0.04),
+                    child: Text(
+                      selectedDuration.toString() +
+                          " " +
+                          selectedTimesSeconds +
+                          "\n" +
+                          selectedExercise.shortname.replaceAll("\n", " "),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Open-Sans",
+                          fontWeight: FontWeight.w200,
+                          fontSize: 22),
+                      textAlign: TextAlign.center,
                     ),
-              (selectedExercise == null ||
+                  ),
+                  (selectedExercise == null ||
                       selectedExercise.info == "" ||
                       clockType == "")
-                  ? Container()
-                  : Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: machineWidth * 0.04),
-                      child: Text(
-                        selectedExercise.info,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
+                      ? Container()
+                      : Padding(
+                    padding:
+                    EdgeInsets.symmetric(horizontal: machineWidth * 0.04),
+                    child: Text(
+                      selectedExercise.info,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Open-Sans",
+                          fontSize: 14),
+                      textAlign: TextAlign.center,
                     ),
-              (!isMachineDirty || clockType == "")
-                  ? Container()
-                  : Padding(
-                      padding: EdgeInsets.all(machineWidth * 0.04),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GestureDetector(
+                  ),
+                  (!isMachineDirty || clockType == "")
+                      ? Container()
+                      : Padding(
+                    padding: EdgeInsets.all(machineWidth * 0.04),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          child: SizedBox(
+                            height: 24,
+                            width: 24,
+                            child:
+                            Image.asset("assets/images/reload_icon.png"),
+                          ),
+                          onTap: () {
+                            machineOnTap();
+                          },
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 12),
+                          child: GestureDetector(
                             child: SizedBox(
                               height: 24,
                               width: 24,
-                              child:
-                                  Image.asset("assets/images/reload_icon.png"),
+                              child: Image.asset(
+                                  "assets/images/camera_icon.png"),
                             ),
                             onTap: () {
-                              machineOnTap();
+                              setState(() {
+                                infoPicIsVisible = !infoPicIsVisible;
+                              });
                             },
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 12),
-                            child: GestureDetector(
-                              child: SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: Image.asset(
-                                    "assets/images/camera_icon.png"),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  infoPicIsVisible = !infoPicIsVisible;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-              (infoPic == null && infoPicIsVisible)
-                  ? Container()
-                  : Padding(
+                  ),
+                  (infoPic == null && infoPicIsVisible)
+                      ? Container()
+                      : Padding(
                       padding: EdgeInsets.all(machineWidth * 0.04),
                       child: infoPic),
-            ],
-          ),
+                ],
+              ),
+            ),
+            ),
+            Positioned(
+              top: 0.0,
+              right: 0.0,
+              child:GestureDetector(
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  color: Color.fromRGBO(148, 189, 60, 1.0),
+                  child: Image.asset("assets/images/menu_icon.png"),
+                ),
+                onTap: () async {
+                  final result = await Navigator.of(context).pushNamed('/settings');
+                  if(result=="restart")
+                    Navigator.of(context).pop(result);
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
