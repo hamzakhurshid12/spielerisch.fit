@@ -75,4 +75,18 @@ class AppLocalization {
     );
   }
 
+  String get settingsMessage {
+    return Intl.message(
+      "We look forward to new partners and exercise-ideas!\n\nTo get your own spinner & ideas, more information and cooperation-requests:\nTom Holzer\ninfo@spielerisch.fit",
+      name: 'settingsMessage',
+    );
+  }
+
+  String get changeLanguage {
+    return Intl.message(
+      "Deutsch",
+      name: 'changeLanguage',
+    );
+  }
+
 }

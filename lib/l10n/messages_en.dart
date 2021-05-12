@@ -21,9 +21,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
+    "changeLanguage" : MessageLookupByLibrary.simpleMessage("Deutsch"),
     "heyWorld" : MessageLookupByLibrary.simpleMessage("Hey World"),
     "pushforyourluck" : MessageLookupByLibrary.simpleMessage("PUSH YOUR LUCK\nAND STAY\nPLAYFUL.FIT"),
     "seconds" : MessageLookupByLibrary.simpleMessage("seconds"),
+    "settingsMessage" : MessageLookupByLibrary.simpleMessage("We look forward to new partners and exercise-ideas!\n\nTo get your own spinner & ideas, more information and cooperation-requests:\nTom Holzer\ninfo@spielerisch.fit"),
     "start" : MessageLookupByLibrary.simpleMessage("START"),
     "stop" : MessageLookupByLibrary.simpleMessage("STOP"),
     "stopwatch" : MessageLookupByLibrary.simpleMessage("STOPWATCH"),

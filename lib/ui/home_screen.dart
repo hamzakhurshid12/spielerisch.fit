@@ -67,6 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
   String clockType = "stopwatch";
 
   GlobalKey machineKey;
+  ScrollController _scrollController = new ScrollController();
+  Widget infoPic;
+  bool infoPicIsVisible = false;
 
   @override
   void initState() {
@@ -202,6 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: ColorHelper.backgroundCyan,
       body: SafeArea(
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -229,12 +233,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.only(top: 16),
                 child: _slotMachine(machineWidth, machineHeight),
               ),
-              selectedExercise == null
+              (selectedExercise == null || clockType == "")
                   ? Container()
                   : Padding(
                       padding: EdgeInsets.all(machineWidth * 0.04),
                       child: Text(
-                        "20 Stück\nSchulter-Acht",
+                        selectedDuration.toString() +
+                            " " +
+                            selectedTimesSeconds +
+                            "\n" +
+                            selectedExercise.shortname.replaceAll("\n", " "),
                         style: TextStyle(
                             color: Colors.white,
                             fontFamily: "Open-Sans",
@@ -243,19 +251,25 @@ class _MyHomePageState extends State<MyHomePage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: machineWidth * 0.04),
-                child: Text(
-                  "Strecke aufrecht stehend deinen rechten Arm nach vorne. Mach eine Faust und zeichne nun mit ausgestrecktem Arm Achter in die Luft. Mach die Sekunden/Stück je einmal pro Seite.",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: "Open-Sans",
-                      fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              isMachineDirty
-                  ? Padding(
+              (selectedExercise == null ||
+                      selectedExercise.info == "" ||
+                      clockType == "")
+                  ? Container()
+                  : Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: machineWidth * 0.04),
+                      child: Text(
+                        selectedExercise.info,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "Open-Sans",
+                            fontSize: 14),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+              (!isMachineDirty || clockType == "")
+                  ? Container()
+                  : Padding(
                       padding: EdgeInsets.all(machineWidth * 0.04),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -271,10 +285,30 @@ class _MyHomePageState extends State<MyHomePage> {
                               machineOnTap();
                             },
                           ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 12),
+                            child: GestureDetector(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: Image.asset(
+                                    "assets/images/camera_icon.png"),
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  infoPicIsVisible = !infoPicIsVisible;
+                                });
+                              },
+                            ),
+                          ),
                         ],
                       ),
-                    )
-                  : Container(),
+                    ),
+              (infoPic == null && infoPicIsVisible)
+                  ? Container()
+                  : Padding(
+                      padding: EdgeInsets.all(machineWidth * 0.04),
+                      child: infoPic),
             ],
           ),
         ),
@@ -467,6 +501,10 @@ class _MyHomePageState extends State<MyHomePage> {
             .replaceAll("<br/>", "\n")
             .replaceAll("</br>", "\n")
             .replaceAll("<br>", "\n");
+        selectedExercise.info = selectedExercise.info
+            .replaceAll("<br/>", "\n")
+            .replaceAll("</br>", "\n")
+            .replaceAll("<br>", "\n");
         break;
     }
   }
@@ -552,6 +590,11 @@ class _MyHomePageState extends State<MyHomePage> {
           timesseconds.removeAt(0);
           excercisesRollerItems.removeAt(0);
         }
+        _scrollController.animateTo(
+          0.0,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+        );
         clockCaption = "";
         clockDuration = "";
         clockType = "";
@@ -570,8 +613,10 @@ class _MyHomePageState extends State<MyHomePage> {
               this.isMachineRunning = !this.isMachineRunning;
               print(selectedDuration);
               print(selectedTimesSeconds);
-              print(selectedExercise);
+              print(selectedExercise.shortname);
+              print(selectedExercise.info);
               timer.cancel();
+              loadInfoPic();
               clockType = selectedTimesSeconds ==
                       AppLocalization.of(MyApp.navKey.currentContext).seconds
                   ? "clock"
@@ -581,8 +626,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   : AppLocalization.of(MyApp.navKey.currentContext).timer;
               setClockTimerValues();
             });
+            Future.delayed(Duration(milliseconds: 100), () {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeOut,
+              );
+            });
           },
         );
       });
+  }
+
+  void loadInfoPic() {
+    infoPicIsVisible = false;
+    if (selectedExercise != null) {
+      if (selectedExercise.info_pic != "") {
+        infoPic = SizedBox(
+          width:64,
+            height: 64,
+            child:Image.network(
+            "https://spielerisch.fit" + selectedExercise.info_pic.substring(1)));
+        return;
+      }
+    }
+    infoPic = null;
   }
 }

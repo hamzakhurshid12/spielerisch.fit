@@ -6,7 +6,7 @@ class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     new Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushNamed(context, '/settings');
     });
 
     return Container(

@@ -40,5 +40,15 @@
   "@times": {
     "type": "text",
     "placeholders": {}
+  },
+  "settingsMessage": "We look forward to new partners and exercise-ideas!\n\nTo get your own spinner & ideas, more information and cooperation-requests:\nTom Holzer\ninfo@spielerisch.fit",
+  "@settingsMessage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "changeLanguage": "Deutsch",
+  "@changeLanguage": {
+    "type": "text",
+    "placeholders": {}
   }
 }

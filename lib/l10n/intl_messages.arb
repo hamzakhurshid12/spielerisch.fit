@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-05-11T18:07:20.029450",
+  "@@last_modified": "2021-05-12T19:59:49.934060",
   "heyWorld": "Hey World",
   "@heyWorld": {
     "description": "Simpel word for greeting ",
@@ -38,6 +38,16 @@
   },
   "times": "times",
   "@times": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "settingsMessage": "We look forward to new partners and exercise-ideas!\n\nTo get your own spinner & ideas, more information and cooperation-requests:\nTom Holzer\ninfo@spielerisch.fit",
+  "@settingsMessage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "changeLanguage": "Deutsch",
+  "@changeLanguage": {
     "type": "text",
     "placeholders": {}
   }

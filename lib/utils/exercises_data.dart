@@ -11,12 +11,11 @@ class ExercisesData {
 
   static Future<String> getDataFromServer() async {
     var uriResponse = await http.get(Uri.parse("https://spielerisch.fit/exercises.json"));
-    return uriResponse.body;
+    return utf8.decode(uriResponse.bodyBytes);
   }
 
   static void load() async {
     dataStr = await getDataFromServer();
-    //dataStr = dataStr.replaceAll("<br/>", "\n");
     dataJson = json.decode(dataStr)["exercises"];
     dataKeysList = dataJson.keys.toList();
     dataRecordsEn = List<Exercise>();

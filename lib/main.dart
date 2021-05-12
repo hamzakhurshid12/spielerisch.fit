@@ -14,6 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:spielerisch_fit/ui/settings_screen.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
 
 import 'locale/AppLocalizationDelegate.dart';
@@ -82,6 +83,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => IntroScreen(),
         '/home': (context) => MyHomePage(analytics: analytics,
             observer: observer),
+        '/settings': (context) => SettingsScreen(),
       },
       supportedLocales: [
         const Locale('en', 'US'),

@@ -40,5 +40,15 @@
   "@times": {
     "type": "text",
     "placeholders": {}
+  },
+  "settingsMessage": "Wir freuen uns über neue Partner und Übungsvorschläge!\n\nFür eigene Spinner & Ideen,mehr Informationen und Partneranfragen:\nTom Holzer\ninfo@spielerisch.fit",
+  "@settingsMessage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "changeLanguage": "English",
+  "@changeLanguage": {
+    "type": "text",
+    "placeholders": {}
   }
 }
