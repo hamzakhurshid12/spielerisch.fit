@@ -16,8 +16,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:spielerisch_fit/main.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:http/http.dart' as http;
 import 'package:spielerisch_fit/utils/exercises_data.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title, this.analytics, this.observer})
@@ -204,140 +204,176 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: ColorHelper.backgroundCyan,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned(
-              top:0.0,
-              left:0.0,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: Text(
-                        AppLocalization.of(context).pushforyourluck,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16),
-                        textAlign: TextAlign.center,
-                      )),
-                  AppLocalization.chosenLanguageCode == "de_DE"
-                      ? Padding(
-                    padding: EdgeInsets.only(top: 0),
-                    child: SizedBox(
-                        height: 40,
-                        child: Image.asset(
-                            "assets/images/logo-spielerisch-fit.png")),
-                  )
-                      : Container(),
-                  Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: _slotMachine(machineWidth, machineHeight),
-                  ),
-                  (selectedExercise == null || clockType == "")
-                      ? Container()
-                      : Padding(
-                    padding: EdgeInsets.all(machineWidth * 0.04),
-                    child: Text(
-                      selectedDuration.toString() +
-                          " " +
-                          selectedTimesSeconds +
-                          "\n" +
-                          selectedExercise.shortname.replaceAll("\n", " "),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Open-Sans",
-                          fontWeight: FontWeight.w200,
-                          fontSize: 22),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  (selectedExercise == null ||
-                      selectedExercise.info == "" ||
-                      clockType == "")
-                      ? Container()
-                      : Padding(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: machineWidth * 0.04),
-                    child: Text(
-                      selectedExercise.info,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Open-Sans",
-                          fontSize: 14),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  (!isMachineDirty || clockType == "")
-                      ? Container()
-                      : Padding(
-                    padding: EdgeInsets.all(machineWidth * 0.04),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          child: SizedBox(
-                            height: 24,
-                            width: 24,
-                            child:
-                            Image.asset("assets/images/reload_icon.png"),
-                          ),
-                          onTap: () {
-                            machineOnTap();
-                          },
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 12),
-                          child: GestureDetector(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Stack(
+            children: [
+              Positioned(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text(
+                          AppLocalization.of(context).pushforyourluck,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "Open-Sans",
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16),
+                          textAlign: TextAlign.center,
+                        )),
+                    AppLocalization.chosenLanguageCode == "de_DE"
+                        ? Padding(
+                            padding: EdgeInsets.only(top: 0),
                             child: SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: Image.asset(
-                                  "assets/images/camera_icon.png"),
-                            ),
-                            onTap: () {
-                              setState(() {
-                                infoPicIsVisible = !infoPicIsVisible;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+                                height: 40,
+                                child: Image.asset(
+                                    "assets/images/logo-spielerisch-fit.png")),
+                          )
+                        : Container(),
+                    Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: _slotMachine(machineWidth, machineHeight),
                     ),
-                  ),
-                  (infoPic == null && infoPicIsVisible)
-                      ? Container()
-                      : Padding(
-                      padding: EdgeInsets.all(machineWidth * 0.04),
-                      child: infoPic),
-                ],
-              ),
-            ),
-            ),
-            Positioned(
-              top: 0.0,
-              right: 0.0,
-              child:GestureDetector(
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  color: Color.fromRGBO(148, 189, 60, 1.0),
-                  child: Image.asset("assets/images/menu_icon.png"),
+                    (selectedExercise == null || clockType == "")
+                        ? Container()
+                        : Padding(
+                            padding: EdgeInsets.all(machineWidth * 0.04),
+                            child: Text(
+                              selectedDuration.toString() +
+                                  " " +
+                                  selectedTimesSeconds +
+                                  "\n" +
+                                  selectedExercise.shortname
+                                      .replaceAll("\n", " "),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Open-Sans",
+                                  fontWeight: FontWeight.w200,
+                                  fontSize: 22),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                    (selectedExercise == null ||
+                            selectedExercise.info == "" ||
+                            clockType == "")
+                        ? Container()
+                        : Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: machineWidth * 0.04),
+                            child: Text(
+                              selectedExercise.info,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Open-Sans",
+                                  fontSize: 14),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                    //<-------------------- ICONS ROW ----------------------------------->
+                    (!isMachineDirty || clockType == "")
+                        ? Container()
+                        : Padding(
+                            padding: EdgeInsets.all(machineWidth * 0.04),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                //<-------------------- Refresh Icon ----------------------------------->
+                                GestureDetector(
+                                  child: SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: Image.asset(
+                                        "assets/images/reload_icon.png"),
+                                  ),
+                                  onTap: () {
+                                    machineOnTap();
+                                  },
+                                ),
+                                //<-------------------- Info Pic Icon ----------------------------------->
+                                infoPic == null
+                                    ? Container()
+                                    : Padding(
+                                        padding: EdgeInsets.only(left: 12),
+                                        child: GestureDetector(
+                                          child: SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: Image.asset(
+                                                "assets/images/camera_icon.png"),
+                                          ),
+                                          onTap: () {
+                                            setState(() {
+                                              infoPicIsVisible =
+                                                  !infoPicIsVisible;
+                                              Future.delayed(
+                                                  Duration(milliseconds: 100),
+                                                  () {
+                                                _scrollController.animateTo(
+                                                    _scrollController.position
+                                                        .maxScrollExtent,
+                                                    duration: Duration(
+                                                        milliseconds: 500),
+                                                    curve: Curves.easeOut);
+                                              });
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                //<-------------------- Video Link Icon ----------------------------------->
+                                selectedExercise.link == "" ||
+                                        selectedExercise.link == null
+                                    ? Container()
+                                    : Padding(
+                                        padding: EdgeInsets.only(left: 12),
+                                        child: GestureDetector(
+                                          child: SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: Image.asset(
+                                                "assets/images/info_icon.png"),
+                                          ),
+                                          onTap: () async {
+                                            if (await canLaunch(
+                                                selectedExercise.link))
+                                              await launch(
+                                                  selectedExercise.link);
+                                          },
+                                        ),
+                                      ),
+                              ],
+                            ),
+                          ),
+                    //<-------------------- Info Picture ----------------------------------->
+                    (infoPic == null || !infoPicIsVisible)
+                        ? Container()
+                        : Padding(
+                            padding: EdgeInsets.all(machineWidth * 0.04),
+                            child: infoPic),
+
+                  ],
                 ),
-                onTap: () async {
-                  final result = await Navigator.of(context).pushNamed('/settings');
-                  if(result=="restart")
-                    Navigator.of(context).pop(result);
-                },
               ),
-            ),
-          ],
+              Positioned(
+                top: 0.0,
+                right: 0.0,
+                child: GestureDetector(
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    color: Color.fromRGBO(148, 189, 60, 1.0),
+                    child: Image.asset("assets/images/menu_icon.png"),
+                  ),
+                  onTap: () async {
+                    final result =
+                        await Navigator.of(context).pushNamed('/settings');
+                    if (result == "restart") Navigator.of(context).pop(result);
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -439,7 +475,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Color.fromRGBO(204, 204, 204, 1.0),
                 fontFamily: "Open-Sans",
                 fontWeight: FontWeight.w800,
-                fontSize: 20),
+                fontSize: 18),
             textAlign: TextAlign.center,
           ),
         ),
@@ -496,7 +532,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               onTap: () {
-                /*TODO:IMPLEMENT*/
                 if (stopWatchTimer != null) {
                   stopWatchTimer.cancel();
                   stopWatchTimer = null;
@@ -622,6 +657,7 @@ class _MyHomePageState extends State<MyHomePage> {
           duration: Duration(milliseconds: 500),
           curve: Curves.easeOut,
         );
+        infoPicIsVisible = false;
         clockCaption = "";
         clockDuration = "";
         clockType = "";
@@ -670,10 +706,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (selectedExercise != null) {
       if (selectedExercise.info_pic != "") {
         infoPic = SizedBox(
-          width:64,
+            width: 64,
             height: 64,
-            child:Image.network(
-            "https://spielerisch.fit" + selectedExercise.info_pic.substring(1)));
+            child: Image.network("https://spielerisch.fit" +
+                selectedExercise.info_pic.substring(1)));
         return;
       }
     }

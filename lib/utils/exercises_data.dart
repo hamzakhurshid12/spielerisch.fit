@@ -21,8 +21,6 @@ class ExercisesData {
     dataRecordsEn = List<Exercise>();
     dataRecordsDe = List<Exercise>();
     for(var x=0; x<dataKeysList.length;x++){
-      if(dataJson[dataKeysList[x]]["de"]["shortname"]=="")
-        continue;
       if(dataJson[dataKeysList[x]]["de"]["shortname"]!="" && dataJson[dataKeysList[x]]["de"]["shortname"]!=null) {
         var y = new Exercise.name(
             dataJson[dataKeysList[x]]["type"],

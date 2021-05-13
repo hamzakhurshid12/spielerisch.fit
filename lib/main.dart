@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
 import 'package:spielerisch_fit/ui/home_screen.dart';
@@ -14,10 +15,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:spielerisch_fit/ui/partners_screen.dart';
 import 'package:spielerisch_fit/ui/settings_screen.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
 
 import 'locale/AppLocalizationDelegate.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -37,6 +42,8 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
 
 AppLocalizationDelegate _localeOverrideDelegate = AppLocalizationDelegate(Locale('de', 'DE'));
+
+SharedPreferences prefs;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,7 +69,7 @@ Future<void> main() async {
   );
 
   await ExercisesData.load();
-
+  prefs = await SharedPreferences.getInstance();
   runApp(MyApp());
 }
 
@@ -75,7 +82,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalization.load(Locale("de","DE"));
+    if(prefs.containsKey("selectedLanguage")){
+      prefs.getString("selectedLanguage")=="de_DE" ? AppLocalization.load(Locale("de", "DE")) : AppLocalization.load(Locale("en", "US"));
+    } else {
+      AppLocalization.load(Locale("de", "DE"));
+    }
     return MaterialApp(
       navigatorKey: navKey, // GlobalKey()
       initialRoute: '/',
@@ -84,6 +95,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => MyHomePage(analytics: analytics,
             observer: observer),
         '/settings': (context) => SettingsScreen(),
+        '/partners': (context) => PartnersScreen(),
       },
       supportedLocales: [
         const Locale('en', 'US'),

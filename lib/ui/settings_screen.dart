@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
 
+import '../main.dart';
+
 class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -52,9 +54,14 @@ class SettingsScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             onTap: () {
-                              AppLocalization.chosenLanguageCode == "de_DE"
-                                  ? AppLocalization.load(Locale("en", "US"))
-                                  : AppLocalization.load(Locale("de", "DE"));
+                              if(AppLocalization.chosenLanguageCode == "de_DE"){
+                                AppLocalization.load(Locale("en", "US"));
+                                prefs.setString("selectedLanguage", 'en_US');
+                              } else {
+                                AppLocalization.load(Locale("de", "DE"));
+                                prefs.setString("selectedLanguage", 'de_DE');
+                              }
+                              prefs.commit();
                               Navigator.of(context).pop("restart");
                             },
                           ),
@@ -77,6 +84,29 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () async {
                   Navigator.of(context).pop();
                 },
+              ),
+            ),
+            Positioned(
+              bottom: 10.0,
+              left: 0.0,
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                      child: Text(
+                        "Partners",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "Open-Sans",
+                            fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pushNamed("/partners");
+                      },
+                    ),
+                ],
               ),
             ),
           ]),
