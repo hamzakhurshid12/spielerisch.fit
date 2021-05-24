@@ -1,6 +1,9 @@
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+
+import '../main.dart';
 
 class ExercisesData {
   static String dataStr = "{}";
@@ -8,19 +11,45 @@ class ExercisesData {
   static List dataKeysList;
   static List<Exercise> dataRecordsEn;
   static List<Exercise> dataRecordsDe;
+  static var partnersMap;
+  static var _partnersMapJsonStr = '{"tsvhb_vb": 16, "ruthofer": 6, "physioehrenh": 15, "cyclist": 4, "kulmx": 8, "loeherz": 9, "mentalshop": 13, "annamariafitness": 18, "crossfithb": 3, "physiokohlauser": 7, "vkimpuls": 17, "alive365": 1, "neuroboxen": 12, "fitboxen": 11}';
+  static int selectedExerciseType = 0;
+  static List exerciseTypes = ['All', 'Fitness', 'Boxing', 'Fitboxen', 'Partner', 'Mobility', 'Atmung', 'Achtsamkeit', 'Crossfit'];
 
   static Future<String> getDataFromServer() async {
-    var uriResponse = await http.get(Uri.parse("https://spielerisch.fit/exercises.json"));
-    return utf8.decode(uriResponse.bodyBytes);
+    try {
+      var uriResponse = await http.get(
+          Uri.parse("https://spielerisch.fit/exercises.json"));
+      var responseStr = utf8.decode(uriResponse.bodyBytes);
+      prefs.setString("exercises_json", responseStr);
+      prefs.commit();
+      return responseStr;
+    } on SocketException catch (e){
+      if(prefs.containsKey("exercises_json")){
+        return prefs.getString("exercises_json");
+      } else {
+        return null;
+      }
+    }
   }
 
   static void load() async {
+    partnersMap = json.decode(_partnersMapJsonStr);
     dataStr = await getDataFromServer();
-    dataJson = json.decode(dataStr)["exercises"];
-    dataKeysList = dataJson.keys.toList();
     dataRecordsEn = List<Exercise>();
     dataRecordsDe = List<Exercise>();
+    if(dataStr==null){
+      return;
+    }
+    dataJson = json.decode(dataStr)["exercises"];
+    dataKeysList = dataJson.keys.toList();
     for(var x=0; x<dataKeysList.length;x++){
+      //Bypassing all exercises which are not in the selected exercise category
+      if(_getExerciseType()!='All'){ //only bypass some if a category other than 'All' is selected
+        int _selectedExerciseIndex = exerciseTypes.indexOf(_getExerciseType());
+        if(dataJson[dataKeysList[x]]['type']!=_selectedExerciseIndex)
+          continue;
+      }
       if(dataJson[dataKeysList[x]]["de"]["shortname"]!="" && dataJson[dataKeysList[x]]["de"]["shortname"]!=null) {
         var y = new Exercise.name(
             dataJson[dataKeysList[x]]["type"],
@@ -52,6 +81,13 @@ class ExercisesData {
         dataRecordsEn.add(y);
       }
     }
+  }
+
+  static String _getExerciseType(){
+    if(prefs.containsKey('selectedExerciseType'))
+      return prefs.getString('selectedExerciseType');
+    else
+      return 'All';
   }
 }
 

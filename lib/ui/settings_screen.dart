@@ -1,14 +1,34 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
+import 'package:spielerisch_fit/utils/ColorsHelper.dart';
+import 'package:spielerisch_fit/utils/exercises_data.dart';
 
 import '../main.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String _dropDownValue;
+
+  @override
+  void initState() {
+    super.initState();
+    if(prefs.containsKey("selectedExerciseType")){
+      _dropDownValue = prefs.getString("selectedExerciseType");
+    } else {
+      _dropDownValue = 'All';
+      prefs.setString('selectedExerciseType', 'All');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(148, 189, 60, 1.0),
+        backgroundColor: ColorHelper.backgroundGreen,
         body: SafeArea(
           child: Stack(children: [
             Positioned(
@@ -69,6 +89,57 @@ class SettingsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.all(28.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                              "Exercises type: ",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Open-Sans",
+                                  fontSize: 16),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        Expanded(
+                            child: DropdownButton(
+                              hint: _dropDownValue == null
+                                  ? Text('Type', style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Open-Sans",
+                                  fontSize: 16))
+                                  : Text(
+                                _dropDownValue, style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Open-Sans",
+                                  fontSize: 16),
+                              ),
+                              dropdownColor: ColorHelper.backgroundGreen,
+                              underline: SizedBox(),
+                              items: ExercisesData.exerciseTypes.map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e, style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: "Open-Sans",
+                                    fontSize: 16),
+                                ),
+                              )).toList(),
+                              onChanged: (val){
+                                setState(() {
+                                  _dropDownValue = val;
+                                  prefs.setString('selectedExerciseType', _dropDownValue);
+                                  ExercisesData.load();
+                                  Navigator.of(context).pop("restart");
+                                });
+                              },
+                            ),
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -87,7 +158,7 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: 10.0,
+              bottom: 20.0,
               left: 0.0,
               width: MediaQuery.of(context).size.width,
               child: Row(

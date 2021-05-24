@@ -67,9 +67,8 @@ Future<void> main() async {
     badge: true,
     sound: true,
   );
-
-  await ExercisesData.load();
   prefs = await SharedPreferences.getInstance();
+  await ExercisesData.load();
   runApp(MyApp());
 }
 

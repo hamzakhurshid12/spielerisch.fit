@@ -351,7 +351,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         : Padding(
                             padding: EdgeInsets.all(machineWidth * 0.04),
                             child: infoPic),
-
+                    //<-------------------- Partner ----------------------------------->
+                    (!isMachineDirty || clockType == "")
+                        ? Container() : selectedExercise.partner=="" || ExercisesData.partnersMap[selectedExercise.partner] == null
+                        ? Container()
+                        : SizedBox(
+                        width: machineWidth*0.6,
+                        child: Image.asset("assets/images/partner ("+ExercisesData.partnersMap[selectedExercise.partner].toString()+").png")
+                    ),
                   ],
                 ),
               ),
@@ -400,7 +407,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Positioned(
           top: machineHeight * 0.255,
           left: machineWidth * 0.23,
-          child: RollerList(
+          child: IgnorePointer(
+          child:RollerList(
             height: machineHeight * 0.14,
             width: machineWidth * 0.14,
             items: values,
@@ -413,12 +421,14 @@ class _MyHomePageState extends State<MyHomePage> {
               _finishRotating();
             },
           ),
+          ),
         ),
 
         // -----------------Center Roller----------------------------------//
         Positioned(
           top: machineHeight * 0.255,
           left: machineWidth * 0.43,
+          child: IgnorePointer(
           child: RollerList(
             height: machineHeight * 0.14,
             width: machineWidth * 0.14,
@@ -432,13 +442,15 @@ class _MyHomePageState extends State<MyHomePage> {
               _finishRotating();
             },
           ),
+          ),
         ),
 
         // -----------------Right Roller----------------------------------//
         Positioned(
           top: machineHeight * 0.255,
           left: machineWidth * 0.62,
-          child: RollerList(
+          child: IgnorePointer(
+          child:RollerList(
             height: machineHeight * 0.14,
             width: machineWidth * 0.14,
             items: excercisesRollerItems,
@@ -451,6 +463,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _finishRotating();
             },
           ),
+        ),
         ),
         // ----------------- Clock ----------------------------------//
         Positioned.fill(
@@ -485,35 +498,38 @@ class _MyHomePageState extends State<MyHomePage> {
           top: machineHeight * 0.8,
           left: machineWidth * 0.3,
           child: Row(children: [
-            GestureDetector(
-              child: SizedBox(
-                width: machineWidth * 0.18,
-                height: machineHeight * 0.08,
-                child: Center(
-                  child: Text(
-                    clockType == "" ? "" : "START",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14),
-                    textAlign: TextAlign.center,
+            Material(
+              child: InkWell(
+                child: SizedBox(
+                  width: machineWidth * 0.18,
+                  height: machineHeight * 0.08,
+                  child: Center(
+                    child: Text(
+                      clockType == "" ? "" : "START",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Open-Sans",
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
+                onTap: () {
+                  if (clockType == "stopwatch") {
+                    stopWatchTimer = getStopWatch();
+                  } else {
+                    stopWatchTimer = getExerciseTimer();
+                  }
+                },
               ),
-              onTap: () {
-                /*TODO:IMPLEMENT*/
-                if (clockType == "stopwatch") {
-                  stopWatchTimer = getStopWatch();
-                } else {
-                  stopWatchTimer = getExerciseTimer();
-                }
-              },
+              color: Colors.transparent,
             ),
             Padding(
               padding: EdgeInsets.only(left: machineWidth * 0.035),
             ),
-            GestureDetector(
+            Material(
+            child:InkWell(
               child: SizedBox(
                 width: machineWidth * 0.18,
                 height: machineHeight * 0.08,
@@ -538,6 +554,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
                 if (clockType != "stopwatch") setClockTimerValues();
               },
+            ),
+              color: Colors.transparent,
             ),
           ]),
         ),
@@ -689,7 +707,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   : AppLocalization.of(MyApp.navKey.currentContext).timer;
               setClockTimerValues();
             });
-            Future.delayed(Duration(milliseconds: 100), () {
+            Future.delayed(Duration(milliseconds: 200), () {
               _scrollController.animateTo(
                 _scrollController.position.maxScrollExtent,
                 duration: Duration(milliseconds: 500),
