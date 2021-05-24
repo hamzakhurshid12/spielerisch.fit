@@ -46,8 +46,14 @@ dependency_overrides:
   intl: ^0.17.0-nullsafety.2
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.8.0
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/launcher_machine.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
