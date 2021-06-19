@@ -23,7 +23,6 @@ import 'locale/AppLocalizationDelegate.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
@@ -39,9 +38,10 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 );
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
-AppLocalizationDelegate _localeOverrideDelegate = AppLocalizationDelegate(Locale('de', 'DE'));
+AppLocalizationDelegate _localeOverrideDelegate =
+    AppLocalizationDelegate(Locale('de', 'DE'));
 
 SharedPreferences prefs;
 
@@ -57,7 +57,7 @@ Future<void> main() async {
   /// default FCM channel to enable heads up notifications.
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   /// Update the iOS foreground notification presentation options to allow
@@ -73,16 +73,17 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
-  FirebaseAnalyticsObserver(analytics: analytics);
+      FirebaseAnalyticsObserver(analytics: analytics);
   static var navKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    if(prefs.containsKey("selectedLanguage")){
-      prefs.getString("selectedLanguage")=="de_DE" ? AppLocalization.load(Locale("de", "DE")) : AppLocalization.load(Locale("en", "US"));
+    if (prefs.containsKey("selectedLanguage")) {
+      prefs.getString("selectedLanguage") == "de_DE"
+          ? AppLocalization.load(Locale("de", "DE"))
+          : AppLocalization.load(Locale("en", "US"));
     } else {
       AppLocalization.load(Locale("de", "DE"));
     }
@@ -91,15 +92,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => IntroScreen(),
-        '/home': (context) => MyHomePage(analytics: analytics,
-            observer: observer),
+        '/home': (context) =>
+            MyHomePage(analytics: analytics, observer: observer),
         '/settings': (context) => SettingsScreen(),
         '/partners': (context) => PartnersScreen(),
       },
-      supportedLocales: [
-        const Locale('en', 'US'),
-        const Locale('de', 'DE')
-      ],
+      supportedLocales: [const Locale('en', 'US'), const Locale('de', 'DE')],
       localizationsDelegates: [
         _localeOverrideDelegate,
         GlobalMaterialLocalizations.delegate,
@@ -109,4 +107,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
