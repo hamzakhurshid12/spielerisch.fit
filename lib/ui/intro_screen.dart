@@ -6,13 +6,16 @@ import 'package:spielerisch_fit/utils/exercises_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class IntroScreen extends StatelessWidget {
-
   bool isInternetConnected = true;
+  bool isVisionModeActive = false;
 
   @override
   Widget build(BuildContext context) {
-    new Future.delayed(const Duration(seconds: 3), () async {
+    new Future.delayed(const Duration(seconds: 5), () async {
       if(ExercisesData.dataRecordsDe.length > 0 || ExercisesData.dataRecordsEn.length > 0) {
+        if(isVisionModeActive){
+          return;
+        }
         final result = await Navigator.pushNamed(context, '/home');
         if(result=="restart")
           this.build(context);
@@ -41,8 +44,22 @@ class IntroScreen extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           SizedBox(
-              child: Image.asset("assets/images/logo-spielerisch-fit.png")
-          ),
+              child: Image.asset("assets/images/logo-spielerisch-fit.png")),
+          Positioned(
+            bottom: 40,
+            child: TextButton(
+              onPressed: () async {
+                isVisionModeActive = true;
+                await Navigator.of(context).pushNamed("/vision_intro");
+                isVisionModeActive = false;
+                this.build(context);
+              },
+              child: Text(
+                "Vision mode",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          )
         ],
       ),
     );
