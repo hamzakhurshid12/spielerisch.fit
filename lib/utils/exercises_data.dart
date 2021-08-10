@@ -20,7 +20,7 @@ class ExercisesData {
     try {
       //Map<String, String> headers = {"Origin": "https://spielerisch.fit"};
       var uriResponse = await http.get(
-          Uri.parse("https://spielerisch.fit/exercises.json"));d
+          Uri.parse("https://spielerisch.fit/exercises.json"));
       var responseStr = utf8.decode(uriResponse.bodyBytes);
       prefs.setString("exercises_json", responseStr);
       prefs.commit();

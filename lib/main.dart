@@ -20,6 +20,7 @@ import 'package:spielerisch_fit/ui/settings_screen.dart';
 import 'package:spielerisch_fit/ui/vision/intro_options.dart';
 import 'package:spielerisch_fit/ui/vision/vision_home_screen.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
+import 'package:spielerisch_fit/utils/vision_data.dart';
 
 import 'locale/AppLocalizationDelegate.dart';
 
@@ -71,6 +72,7 @@ Future<void> main() async {
   );
   prefs = await SharedPreferences.getInstance();
   await ExercisesData.load();
+  await VisionData.load();
   runApp(MyApp());
 }
 
