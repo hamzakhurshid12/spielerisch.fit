@@ -13,7 +13,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+/*import 'package:flutter_local_notifications/flutter_local_notifications.dart';*/
 import 'package:intl/intl.dart';
 import 'package:spielerisch_fit/ui/partners_screen.dart';
 import 'package:spielerisch_fit/ui/settings_screen.dart';
@@ -33,7 +33,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
 }
 
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
+/*const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'default_channel', // id
   'Default Notifications', // title
   'This channel is used for notifications.', // description
@@ -41,7 +41,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 );
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();*/
 
 AppLocalizationDelegate _localeOverrideDelegate =
     AppLocalizationDelegate(Locale('de', 'DE'));
@@ -58,10 +58,10 @@ Future<void> main() async {
   ///
   /// We use this channel in the `AndroidManifest.xml` file to override the
   /// default FCM channel to enable heads up notifications.
-  await flutterLocalNotificationsPlugin
+  /*await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+      ?.createNotificationChannel(channel);*/
 
   /// Update the iOS foreground notification presentation options to allow
   /// heads up notifications.

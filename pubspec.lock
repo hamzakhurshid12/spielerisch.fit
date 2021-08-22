@@ -216,20 +216,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.8.1"
-  flutter_local_notifications:
-    dependency: "direct main"
-    description:
-      name: flutter_local_notifications
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.0.0"
-  flutter_local_notifications_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_local_notifications_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.0"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -516,13 +502,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
-  timezone:
-    dependency: transitive
-    description:
-      name: timezone
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.7.0"
   typed_data:
     dependency: transitive
     description:
@@ -616,4 +595,4 @@ packages:
     version: "2.2.1"
 sdks:
   dart: ">=2.12.0 <3.0.0"
-  flutter: ">=2.2.0"
+  flutter: ">=1.22.0"

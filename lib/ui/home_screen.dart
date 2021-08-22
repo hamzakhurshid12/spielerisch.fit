@@ -15,7 +15,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:spielerisch_fit/main.dart';
 
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    /*FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
       if (notification != null && android != null) {
@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ));
       }
-    });
+    });*/
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
