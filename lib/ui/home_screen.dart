@@ -32,7 +32,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   bool isMachineRunning = false;
   bool isMachineDirty = false;
   var VALUES = [35, 40, 10, 45, 15, 50, 20, 55, 25, 60, 30];
@@ -71,6 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget infoPic;
   bool infoPicIsVisible = false;
 
+  Widget currentVisionWidgetOnScreen = Container();
+  int visionModeWidgetsRollingIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -97,29 +99,32 @@ class _MyHomePageState extends State<MyHomePage> {
       print('A new onMessageOpenedApp event was published!');
     });
 
-    clockCaption = AppLocalization.of(MyApp.navKey.currentContext).stopwatch;
+    clockCaption = AppLocalization
+        .of(MyApp.navKey.currentContext)
+        .stopwatch;
     clockDuration = "00 : 00 : 00 : 00";
 
     chosenLanguageRecords = AppLocalization.chosenLanguageCode == "de_DE"
         ? ExercisesData.dataRecordsDe
         : ExercisesData.dataRecordsEn;
     excercisesRollerItems = chosenLanguageRecords
-        .map((e) => Padding(
-              padding: EdgeInsets.all(2.0),
-              child: Center(
-                child: Text(
-                  e.shortname
-                      .replaceAll("<br/>", "\n")
-                      .replaceAll("</br>", "\n")
-                      .replaceAll("<br>", "\n"),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: ColorHelper.red,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ))
+        .map((e) =>
+        Padding(
+          padding: EdgeInsets.all(2.0),
+          child: Center(
+            child: Text(
+              e.shortname
+                  .replaceAll("<br/>", "\n")
+                  .replaceAll("</br>", "\n")
+                  .replaceAll("<br>", "\n"),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: ColorHelper.red,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+        ))
         .toList();
 
     excercisesRollerItems.insert(
@@ -132,19 +137,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
 
     values = VALUES
-        .map((val) => Padding(
-              padding: EdgeInsets.all(2.0),
-              child: Center(
-                child: Text(
-                  val.toString(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: ColorHelper.red,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ))
+        .map((val) =>
+        Padding(
+          padding: EdgeInsets.all(2.0),
+          child: Center(
+            child: Text(
+              val.toString(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: ColorHelper.red,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+        ))
         .toList();
 
     values.insert(
@@ -157,33 +163,58 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
 
     TIMESSECONDS = [
-      AppLocalization.of(MyApp.navKey.currentContext).seconds,
-      AppLocalization.of(MyApp.navKey.currentContext).times,
-      AppLocalization.of(MyApp.navKey.currentContext).seconds,
-      AppLocalization.of(MyApp.navKey.currentContext).times,
-      AppLocalization.of(MyApp.navKey.currentContext).seconds,
-      AppLocalization.of(MyApp.navKey.currentContext).times,
-      AppLocalization.of(MyApp.navKey.currentContext).seconds,
-      AppLocalization.of(MyApp.navKey.currentContext).times,
-      AppLocalization.of(MyApp.navKey.currentContext).seconds,
-      AppLocalization.of(MyApp.navKey.currentContext).times,
-      AppLocalization.of(MyApp.navKey.currentContext).seconds,
-      AppLocalization.of(MyApp.navKey.currentContext).times
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .seconds,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .times,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .seconds,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .times,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .seconds,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .times,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .seconds,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .times,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .seconds,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .times,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .seconds,
+      AppLocalization
+          .of(MyApp.navKey.currentContext)
+          .times
     ];
     timesseconds = TIMESSECONDS
-        .map<Widget>((val) => Padding(
-              padding: EdgeInsets.all(2.0),
-              child: Center(
-                child: Text(
-                  val,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: ColorHelper.red,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ))
+        .map<Widget>((val) =>
+        Padding(
+          padding: EdgeInsets.all(2.0),
+          child: Center(
+            child: Text(
+              val,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: ColorHelper.red,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+        ))
         .toList();
     timesseconds.insert(
         0,
@@ -193,12 +224,23 @@ class _MyHomePageState extends State<MyHomePage> {
             "assets/images/slotmachine-start-overlay.png",
           ),
         ));
+
+    //setting initial screen image for vision mode
+    currentVisionWidgetOnScreen = Image.asset(
+      "assets/images/slotmachine-start-overlay-single-window.png",
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;
     return Scaffold(
@@ -215,7 +257,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     Padding(
                         padding: EdgeInsets.only(top: 20),
                         child: Text(
-                          AppLocalization.of(context).pushforyourluck,
+                          AppLocalization
+                              .of(context)
+                              .pushforyourluck,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: "Open-Sans",
@@ -225,139 +269,145 @@ class _MyHomePageState extends State<MyHomePage> {
                         )),
                     AppLocalization.chosenLanguageCode == "de_DE"
                         ? Padding(
-                            padding: EdgeInsets.only(top: 0),
-                            child: SizedBox(
-                                height: 40,
-                                child: Image.asset(
-                                    "assets/images/logo-spielerisch-fit.png")),
-                          )
+                      padding: EdgeInsets.only(top: 0),
+                      child: SizedBox(
+                          height: 40,
+                          child: Image.asset(
+                              "assets/images/logo-spielerisch-fit.png")),
+                    )
                         : Container(),
                     Padding(
                       padding: EdgeInsets.only(top: 16),
-                      child: _slotMachine(machineWidth, machineHeight),
+                      child: _slotMachineNormalMode(
+                          machineWidth, machineHeight),
                     ),
                     (selectedExercise == null || clockType == "")
                         ? Container()
                         : Padding(
-                            padding: EdgeInsets.all(machineWidth * 0.04),
-                            child: Text(
-                              selectedDuration.toString() +
-                                  " " +
-                                  selectedTimesSeconds +
-                                  "\n" +
-                                  selectedExercise.shortname
-                                      .replaceAll("\n", " "),
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Open-Sans",
-                                  fontWeight: FontWeight.w200,
-                                  fontSize: 22),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+                      padding: EdgeInsets.all(machineWidth * 0.04),
+                      child: Text(
+                        selectedDuration.toString() +
+                            " " +
+                            selectedTimesSeconds +
+                            "\n" +
+                            selectedExercise.shortname
+                                .replaceAll("\n", " "),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "Open-Sans",
+                            fontWeight: FontWeight.w200,
+                            fontSize: 22),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     (selectedExercise == null ||
-                            selectedExercise.info == "" ||
-                            clockType == "")
+                        selectedExercise.info == "" ||
+                        clockType == "")
                         ? Container()
                         : Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: machineWidth * 0.04),
-                            child: Text(
-                              selectedExercise.info,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Open-Sans",
-                                  fontSize: 14),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: machineWidth * 0.04),
+                      child: Text(
+                        selectedExercise.info,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "Open-Sans",
+                            fontSize: 14),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     //<-------------------- ICONS ROW ----------------------------------->
                     (!isMachineDirty || clockType == "")
                         ? Container()
                         : Padding(
-                            padding: EdgeInsets.all(machineWidth * 0.04),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                //<-------------------- Refresh Icon ----------------------------------->
-                                GestureDetector(
-                                  child: SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: Image.asset(
-                                        "assets/images/reload_icon.png"),
-                                  ),
-                                  onTap: () {
-                                    machineOnTap();
-                                  },
-                                ),
-                                //<-------------------- Info Pic Icon ----------------------------------->
-                                infoPic == null
-                                    ? Container()
-                                    : Padding(
-                                        padding: EdgeInsets.only(left: 12),
-                                        child: GestureDetector(
-                                          child: SizedBox(
-                                            height: 24,
-                                            width: 24,
-                                            child: Image.asset(
-                                                "assets/images/camera_icon.png"),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              infoPicIsVisible =
-                                                  !infoPicIsVisible;
-                                              Future.delayed(
-                                                  Duration(milliseconds: 100),
-                                                  () {
-                                                _scrollController.animateTo(
-                                                    _scrollController.position
-                                                        .maxScrollExtent,
-                                                    duration: Duration(
-                                                        milliseconds: 500),
-                                                    curve: Curves.easeOut);
-                                              });
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                //<-------------------- Video Link Icon ----------------------------------->
-                                selectedExercise.link == "" ||
-                                        selectedExercise.link == null
-                                    ? Container()
-                                    : Padding(
-                                        padding: EdgeInsets.only(left: 12),
-                                        child: GestureDetector(
-                                          child: SizedBox(
-                                            height: 24,
-                                            width: 24,
-                                            child: Image.asset(
-                                                "assets/images/info_icon.png"),
-                                          ),
-                                          onTap: () async {
-                                            if (await canLaunch(
-                                                selectedExercise.link))
-                                              await launch(
-                                                  selectedExercise.link);
-                                          },
-                                        ),
-                                      ),
-                              ],
+                      padding: EdgeInsets.all(machineWidth * 0.04),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          //<-------------------- Refresh Icon ----------------------------------->
+                          GestureDetector(
+                            child: SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: Image.asset(
+                                  "assets/images/reload_icon.png"),
+                            ),
+                            onTap: () {
+                              normalModeMachineOnTap();
+                            },
+                          ),
+                          //<-------------------- Info Pic Icon ----------------------------------->
+                          infoPic == null
+                              ? Container()
+                              : Padding(
+                            padding: EdgeInsets.only(left: 12),
+                            child: GestureDetector(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: Image.asset(
+                                    "assets/images/camera_icon.png"),
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  infoPicIsVisible =
+                                  !infoPicIsVisible;
+                                  Future.delayed(
+                                      Duration(milliseconds: 100),
+                                          () {
+                                        _scrollController.animateTo(
+                                            _scrollController.position
+                                                .maxScrollExtent,
+                                            duration: Duration(
+                                                milliseconds: 500),
+                                            curve: Curves.easeOut);
+                                      });
+                                });
+                              },
                             ),
                           ),
+                          //<-------------------- Video Link Icon ----------------------------------->
+                          selectedExercise.link == "" ||
+                              selectedExercise.link == null
+                              ? Container()
+                              : Padding(
+                            padding: EdgeInsets.only(left: 12),
+                            child: GestureDetector(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: Image.asset(
+                                    "assets/images/info_icon.png"),
+                              ),
+                              onTap: () async {
+                                if (await canLaunch(
+                                    selectedExercise.link))
+                                  await launch(
+                                      selectedExercise.link);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     //<-------------------- Info Picture ----------------------------------->
                     (infoPic == null || !infoPicIsVisible)
                         ? Container()
                         : Padding(
-                            padding: EdgeInsets.all(machineWidth * 0.04),
-                            child: infoPic),
+                        padding: EdgeInsets.all(machineWidth * 0.04),
+                        child: infoPic),
                     //<-------------------- Partner ----------------------------------->
                     (!isMachineDirty || clockType == "")
-                        ? Container() : selectedExercise.partner=="" || ExercisesData.partnersMap[selectedExercise.partner] == null
+                        ? Container() : selectedExercise.partner == "" ||
+                        ExercisesData.partnersMap[selectedExercise.partner] ==
+                            null
                         ? Container()
                         : SizedBox(
-                        width: machineWidth*0.6,
-                        child: Image.asset("assets/images/partner ("+ExercisesData.partnersMap[selectedExercise.partner].toString()+").png")
+                        width: machineWidth * 0.6,
+                        child: Image.asset(
+                            "assets/images/partner (" + ExercisesData
+                                .partnersMap[selectedExercise.partner]
+                                .toString() + ").png")
                     ),
                   ],
                 ),
@@ -374,7 +424,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   onTap: () async {
                     final result =
-                        await Navigator.of(context).pushNamed('/settings');
+                    await Navigator.of(context).pushNamed('/settings');
                     if (result == "restart") Navigator.of(context).pop(result);
                   },
                 ),
@@ -386,7 +436,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _slotMachine(double machineWidth, double machineHeight) {
+  Widget _slotMachineNormalMode(double machineWidth, double machineHeight) {
     return Stack(
       children: [
         // ----------------- Machine ----------------------------------//
@@ -398,7 +448,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ? "assets/images/spinner-big-running.png"
                 : "assets/images/spinner-big.png"),
             onTap: () {
-              machineOnTap();
+              normalModeMachineOnTap();
             },
           ),
         ),
@@ -408,19 +458,19 @@ class _MyHomePageState extends State<MyHomePage> {
           top: machineHeight * 0.255,
           left: machineWidth * 0.23,
           child: IgnorePointer(
-          child:RollerList(
-            height: machineHeight * 0.14,
-            width: machineWidth * 0.14,
-            items: values,
-            initialIndex: 1,
-            dividerThickness: 0.0,
-            visibilityRadius: 0.0,
-            scrollType: ScrollType.bothDirections,
-            key: leftRoller,
-            onSelectedIndexChanged: (value) {
-              _finishRotating();
-            },
-          ),
+            child: RollerList(
+              height: machineHeight * 0.14,
+              width: machineWidth * 0.14,
+              items: values,
+              initialIndex: 1,
+              dividerThickness: 0.0,
+              visibilityRadius: 0.0,
+              scrollType: ScrollType.bothDirections,
+              key: leftRoller,
+              onSelectedIndexChanged: (value) {
+                _finishRotating();
+              },
+            ),
           ),
         ),
 
@@ -429,19 +479,19 @@ class _MyHomePageState extends State<MyHomePage> {
           top: machineHeight * 0.255,
           left: machineWidth * 0.43,
           child: IgnorePointer(
-          child: RollerList(
-            height: machineHeight * 0.14,
-            width: machineWidth * 0.14,
-            items: timesseconds,
-            initialIndex: 1,
-            dividerThickness: 0.0,
-            visibilityRadius: 0.0,
-            scrollType: ScrollType.bothDirections,
-            key: middleRoller,
-            onSelectedIndexChanged: (value) {
-              _finishRotating();
-            },
-          ),
+            child: RollerList(
+              height: machineHeight * 0.14,
+              width: machineWidth * 0.14,
+              items: timesseconds,
+              initialIndex: 1,
+              dividerThickness: 0.0,
+              visibilityRadius: 0.0,
+              scrollType: ScrollType.bothDirections,
+              key: middleRoller,
+              onSelectedIndexChanged: (value) {
+                _finishRotating();
+              },
+            ),
           ),
         ),
 
@@ -450,20 +500,20 @@ class _MyHomePageState extends State<MyHomePage> {
           top: machineHeight * 0.255,
           left: machineWidth * 0.62,
           child: IgnorePointer(
-          child:RollerList(
-            height: machineHeight * 0.14,
-            width: machineWidth * 0.14,
-            items: excercisesRollerItems,
-            initialIndex: 1,
-            dividerThickness: 0.0,
-            visibilityRadius: 0.0,
-            scrollType: ScrollType.bothDirections,
-            key: rightRoller,
-            onSelectedIndexChanged: (value) {
-              _finishRotating();
-            },
+            child: RollerList(
+              height: machineHeight * 0.14,
+              width: machineWidth * 0.14,
+              items: excercisesRollerItems,
+              initialIndex: 1,
+              dividerThickness: 0.0,
+              visibilityRadius: 0.0,
+              scrollType: ScrollType.bothDirections,
+              key: rightRoller,
+              onSelectedIndexChanged: (value) {
+                _finishRotating();
+              },
+            ),
           ),
-        ),
         ),
         // ----------------- Clock ----------------------------------//
         Positioned.fill(
@@ -529,32 +579,32 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.only(left: machineWidth * 0.035),
             ),
             Material(
-            child:InkWell(
-              child: SizedBox(
-                width: machineWidth * 0.18,
-                height: machineHeight * 0.08,
-                child: Center(
-                  child: Text(
-                    clockType == "stopwatch"
-                        ? "STOP"
-                        : (clockType == "" ? "" : "RESET"),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14),
-                    textAlign: TextAlign.center,
+              child: InkWell(
+                child: SizedBox(
+                  width: machineWidth * 0.18,
+                  height: machineHeight * 0.08,
+                  child: Center(
+                    child: Text(
+                      clockType == "stopwatch"
+                          ? "STOP"
+                          : (clockType == "" ? "" : "RESET"),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Open-Sans",
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
+                onTap: () {
+                  if (stopWatchTimer != null) {
+                    stopWatchTimer.cancel();
+                    stopWatchTimer = null;
+                  }
+                  if (clockType != "stopwatch") setClockTimerValues();
+                },
               ),
-              onTap: () {
-                if (stopWatchTimer != null) {
-                  stopWatchTimer.cancel();
-                  stopWatchTimer = null;
-                }
-                if (clockType != "stopwatch") setClockTimerValues();
-              },
-            ),
               color: Colors.transparent,
             ),
           ]),
@@ -660,7 +710,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void machineOnTap() {
+  void normalModeMachineOnTap() {
     if (!this.isMachineRunning)
       setState(() {
         this.isMachineRunning = !this.isMachineRunning;
@@ -689,7 +739,7 @@ class _MyHomePageState extends State<MyHomePage> {
         new Timer.periodic(
           //Machine running timer
           _ROTATION_DURATION,
-          (Timer timer) {
+              (Timer timer) {
             setState(() {
               this.isMachineRunning = !this.isMachineRunning;
               print(selectedDuration);
@@ -699,12 +749,18 @@ class _MyHomePageState extends State<MyHomePage> {
               timer.cancel();
               loadInfoPic();
               clockType = selectedTimesSeconds ==
-                      AppLocalization.of(MyApp.navKey.currentContext).seconds
+                  AppLocalization
+                      .of(MyApp.navKey.currentContext)
+                      .seconds
                   ? "clock"
                   : "stopwatch";
               clockCaption = clockType == "stopwatch"
-                  ? AppLocalization.of(MyApp.navKey.currentContext).stopwatch
-                  : AppLocalization.of(MyApp.navKey.currentContext).timer;
+                  ? AppLocalization
+                  .of(MyApp.navKey.currentContext)
+                  .stopwatch
+                  : AppLocalization
+                  .of(MyApp.navKey.currentContext)
+                  .timer;
               setClockTimerValues();
             });
             Future.delayed(Duration(milliseconds: 200), () {

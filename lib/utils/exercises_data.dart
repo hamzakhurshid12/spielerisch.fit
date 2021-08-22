@@ -18,6 +18,7 @@ class ExercisesData {
 
   static Future<String> getDataFromServer() async {
     try {
+      //Map<String, String> headers = {"Origin": "https://spielerisch.fit"};
       var uriResponse = await http.get(
           Uri.parse("https://spielerisch.fit/exercises.json"));
       var responseStr = utf8.decode(uriResponse.bodyBytes);

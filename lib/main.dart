@@ -17,7 +17,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:spielerisch_fit/ui/partners_screen.dart';
 import 'package:spielerisch_fit/ui/settings_screen.dart';
+import 'package:spielerisch_fit/ui/vision/intro_options.dart';
+import 'package:spielerisch_fit/ui/vision/vision_home_screen.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
+import 'package:spielerisch_fit/utils/vision_data.dart';
 
 import 'locale/AppLocalizationDelegate.dart';
 
@@ -69,6 +72,7 @@ Future<void> main() async {
   );
   prefs = await SharedPreferences.getInstance();
   await ExercisesData.load();
+  await VisionData.load();
   runApp(MyApp());
 }
 
@@ -96,6 +100,9 @@ class MyApp extends StatelessWidget {
             MyHomePage(analytics: analytics, observer: observer),
         '/settings': (context) => SettingsScreen(),
         '/partners': (context) => PartnersScreen(),
+        '/vision_intro': (context) => IntroVision(),
+        '/vision_home' : (context) => VisionHomePage(analytics: analytics,
+            observer: observer),
       },
       supportedLocales: [const Locale('en', 'US'), const Locale('de', 'DE')],
       localizationsDelegates: [
