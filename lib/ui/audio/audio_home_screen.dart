@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -75,6 +77,9 @@ class _AudioHomePageState extends State<AudioHomePage> {
   bool isFullScreen = false;
 
   List<Map<String, dynamic>> selectedAudioFiles;
+
+  AudioCache audioCache = AudioCache();
+  AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -324,18 +329,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
                         ),
                       ),
                       onTap: () {
-                        if (stopWatchTimer != null) {
-                          stopWatchTimer.cancel();
-                          stopWatchTimer = null;
-                        }
-                        if (visionRollingTimer != null) {
-                          visionRollingTimer.cancel();
-                          visionRollingTimer = null;
-                        }
-                        setState(() {
-                          this.isMachineRunning = !this.isMachineRunning;
-                          setClockTimerValues();
-                        });
+                        stopClock();
                       },
                     ),
                     color: Colors.transparent,
@@ -347,6 +341,25 @@ class _AudioHomePageState extends State<AudioHomePage> {
         ),
       ),
     );
+  }
+
+  void stopClock() async {
+    await stopAudioPlayer();
+    if (stopWatchTimer != null) {
+    stopWatchTimer.cancel();
+    stopWatchTimer = null;
+    }
+    if (visionRollingTimer != null) {
+    visionRollingTimer.cancel();
+    visionRollingTimer = null;
+    }
+    setState(() {
+    this.isMachineRunning = !this.isMachineRunning;
+    setClockTimerValues();
+    currentVisionWidgetOnScreen = Image.asset(
+    "assets/images/slotmachine-start-overlay-single-window.png",
+    );
+    });
   }
 
   void toggleWidgetLists() {
@@ -409,19 +422,31 @@ class _AudioHomePageState extends State<AudioHomePage> {
     }
     return Timer.periodic(
         new Duration(milliseconds: (totalSelectedSeconds * 1000).round()),
-        (Timer timer) {
+        (Timer timer) async {
+          int nextIndex = _random.nextInt(selectedAudioFiles.length);
+          Map<String, dynamic> nextAudio = selectedAudioFiles[nextIndex];
+          await stopAudioPlayer();
+          audioPlayer = await audioCache.loop(nextAudio["path"]);
       setState(() {
-        int nextIndex = _random.nextInt(selectedRollerWidgetList.length);
-        Widget nextWidget = selectedRollerWidgetList[nextIndex];
+        /*Widget nextWidget = selectedRollerWidgetList[nextIndex];
         if (currentVisionWidgetOnScreen == nextWidget) {
           //making sure all widgets are unique consecutively
           currentVisionWidgetOnScreen = selectedRollerWidgetList[
               (nextIndex + 1) % selectedRollerWidgetList.length];
         } else {
           currentVisionWidgetOnScreen = nextWidget;
-        }
+        }*/
+
       });
     });
+  }
+
+  Future<void> stopAudioPlayer() async {
+    audioCache.clearCache();
+    await audioPlayer?.stop();
+    await audioPlayer?.release();
+    await audioPlayer?.dispose();
+    audioCache = AudioCache();
   }
 
   Timer getStopWatchTimer() {
@@ -540,18 +565,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
                   ),
                 ),
                 onTap: () {
-                  if (stopWatchTimer != null) {
-                    stopWatchTimer.cancel();
-                    stopWatchTimer = null;
-                  }
-                  if (visionRollingTimer != null) {
-                    visionRollingTimer.cancel();
-                    visionRollingTimer = null;
-                  }
-                  setState(() {
-                    this.isMachineRunning = !this.isMachineRunning;
-                    setClockTimerValues();
-                  });
+                  stopClock();
                 },
               ),
               color: Colors.transparent,
@@ -573,6 +587,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
         clockDuration = "";
 
         stopWatchTimer = getStopWatchTimer();
+        currentVisionWidgetOnScreen = selectedRollerWidgetList[0];
         visionRollingTimer = getVisionRollingTimer();
       });
   }
@@ -585,22 +600,6 @@ class _AudioHomePageState extends State<AudioHomePage> {
     clockDuration = formatter.format(seconds % 60) +
         "." +
         formatter.format(centiSeconds % 100);
-  }
-
-  /*returns a random color from a list of 4 basic colors: Green, Yellow, Blue, Red
-  * Excludes the given color from randomly provided outputs*/
-  Color getRandomColor(Color excludedColor) {
-    List<Color> colors = [
-      Color.fromRGBO(0, 0, 255, 1.0),
-      Color.fromRGBO(0, 255, 0, 1.0),
-      Color.fromRGBO(255, 0, 0, 1.0),
-      Color.fromRGBO(255, 255, 0, 1.0)
-    ];
-    int randomNum = _random.nextInt(120) % 4;
-    if (colors[randomNum] == excludedColor) {
-      randomNum = (randomNum + 1) % 4;
-    }
-    return colors[randomNum];
   }
 
   String getRandomColorName() {

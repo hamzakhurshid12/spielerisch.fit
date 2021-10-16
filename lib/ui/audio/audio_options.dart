@@ -96,6 +96,18 @@ class _IntroAudioState extends State<IntroAudio> {
                   textAlign: TextAlign.center,
                 ),
                 Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                ),
+                Text(
+                  "Please select the audio files",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "Open-Sans",
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                Padding(
                   padding: EdgeInsets.only(top: 28.0),
                 ),
                 Expanded(
@@ -132,26 +144,30 @@ class _IntroAudioState extends State<IntroAudio> {
     );
   }
 
-  TextButton buildStartButton(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        if(AudioData.getSelectedAudioFiles().length==0){
-          final snackBar = SnackBar(content: Text('Please select audio files to continue!'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        } else {
-          //AudioHomePage.totalDuration = _durationListMap[_durationDropDownValue];
-          AudioHomePage.totalDuration = 2.0;
-          /*AudioHomePage.visionModeColors = _colorsListMap[_colorsDropDownValue];
+  Widget buildStartButton(BuildContext context) {
+    return SizedBox(
+      width: 100.0,
+      child: TextButton(
+        onPressed: () {
+          if(AudioData.getSelectedAudioFiles().length==0){
+            final snackBar = SnackBar(content: Text('Please select audio files to continue!'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else {
+            //AudioHomePage.totalDuration = _durationListMap[_durationDropDownValue];
+            //AudioHomePage.totalDuration = 2.0;
+            /*AudioHomePage.visionModeColors = _colorsListMap[_colorsDropDownValue];
           AudioHomePage.visionModeType = _modesListMap[_modeDropDownValue];*/
-          Navigator.of(context).pushNamed("/audio_home");
-          //AudioData.getSelectedAudioFiles();
-        }
-      },
-      child: Text(
-        "Start",
-        style: TextStyle(color: Colors.white),
+            //Navigator.of(context).pushNamed("/audio_home");
+            Navigator.of(context).pushNamed("/audio_intro_level_2");
+            //AudioData.getSelectedAudioFiles();
+          }
+        },
+        child: Text(
+          "Continue",
+          style: TextStyle(color: Colors.white),
+        ),
+        style: TextButton.styleFrom(backgroundColor: ColorHelper.backgroundGreen),
       ),
-      style: TextButton.styleFrom(backgroundColor: ColorHelper.backgroundGreen),
     );
   }
 
@@ -359,7 +375,8 @@ class _IntroAudioState extends State<IntroAudio> {
           ),
           trailing: GestureDetector(
             onTap: () async {
-              widget.audioCache.play(e["path"]);
+              await widget.audioPlayer?.stop();
+              widget.audioPlayer = await widget.audioCache.play(e["path"]);
               e["isPlaying"] = true;
             },
             child: Icon(

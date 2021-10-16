@@ -47,16 +47,40 @@ class IntroScreen extends StatelessWidget {
               child: Image.asset("assets/images/logo-spielerisch-fit.png")),
           Positioned(
             bottom: 40,
-            child: TextButton(
-              onPressed: () async {
-                isVisionModeActive = true;
-                await Navigator.of(context).pushNamed("/audio_intro");
-                isVisionModeActive = false;
-                this.build(context);
-              },
-              child: Text(
-                "Vision mode",
-                style: TextStyle(color: Colors.white),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        isVisionModeActive = true;
+                        await Navigator.of(context).pushNamed("/vision_intro");
+                        isVisionModeActive = false;
+                        this.build(context);
+                      },
+                      child: Text(
+                        "Vision mode",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        isVisionModeActive = true;
+                        await Navigator.of(context).pushNamed("/audio_intro");
+                        isVisionModeActive = false;
+                        this.build(context);
+                      },
+                      child: Text(
+                        "Audio mode",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           )
