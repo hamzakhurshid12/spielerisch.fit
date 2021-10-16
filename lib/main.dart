@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
+import 'package:spielerisch_fit/ui/audio/audio_home_screen.dart';
+import 'package:spielerisch_fit/ui/audio/audio_options.dart';
 import 'package:spielerisch_fit/ui/home_screen.dart';
 import 'package:spielerisch_fit/ui/intro_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -102,6 +104,9 @@ class MyApp extends StatelessWidget {
         '/partners': (context) => PartnersScreen(),
         '/vision_intro': (context) => IntroVision(),
         '/vision_home' : (context) => VisionHomePage(analytics: analytics,
+            observer: observer),
+        '/audio_intro' : (context) => IntroAudio(),
+        '/audio_home' : (context) => AudioHomePage(analytics: analytics,
             observer: observer),
       },
       supportedLocales: [const Locale('en', 'US'), const Locale('de', 'DE')],

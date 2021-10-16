@@ -1,0 +1,27 @@
+class AudioData{
+  static List<Map<String, dynamic>> animalsMap = [{"filename": "Bear", "path": "audio-sets/animals/bear.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Bird Owl", "path": "audio-sets/animals/birdowl.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Cat", "path": "audio-sets/animals/cat.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Dog", "path": "audio-sets/animals/dog.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Horse", "path": "audio-sets/animals/horse.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Pig", "path": "audio-sets/animals/pig.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Sheep", "path": "audio-sets/animals/sheep.mp3", "isPlaying": false, "isChecked": false}];
+
+  static List<Map<String, dynamic>> birdsMap = [{"filename": "Buzzard", "path": "audio-sets/birds/buzzard.mp3", "isPlaying": false, "isChecked": true}, {"filename": "Crow", "path": "audio-sets/birds/crow.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Eagle", "path": "audio-sets/birds/eagle.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Owl", "path": "audio-sets/birds/owl.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Peacock", "path": "audio-sets/birds/peacock.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Warbler", "path": "audio-sets/birds/warbler.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Woodpecker", "path": "audio-sets/birds/woodpecker.mp3", "isPlaying": false, "isChecked": false}];
+
+  static List<Map<String, dynamic>> hertzMap = [{"filename": "1200hz", "path": "audio-sets/hertz/1200hz.mp3", "isPlaying": false, "isChecked": false}, {"filename": "2000hz", "path": "audio-sets/hertz/2000hz.mp3", "isPlaying": false, "isChecked": false}, {"filename": "3200hz", "path": "audio-sets/hertz/3200hz.mp3", "isPlaying": false, "isChecked": false}, {"filename": "440hz", "path": "audio-sets/hertz/440hz.mp3", "isPlaying": false, "isChecked": false}, {"filename": "5000hz", "path": "audio-sets/hertz/5000hz.mp3", "isPlaying": false, "isChecked": false}, {"filename": "880hz", "path": "audio-sets/hertz/880hz.mp3", "isPlaying": false, "isChecked": false}];
+
+  static List<Map<String, dynamic>> punchesMap = [{"filename": "Bag", "path": "audio-sets/punches/bag.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Crunchy", "path": "audio-sets/punches/crunchy.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Face", "path": "audio-sets/punches/face.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Low Body", "path": "audio-sets/punches/lowbody.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Punch", "path": "audio-sets/punches/punch.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Punching pg", "path": "audio-sets/punches/punchingpg.mp3", "isPlaying": false, "isChecked": false}];
+
+  static List<Map<String, dynamic>> sfxMap = [{"filename": "Car horn", "path": "audio-sets/sfx/Car Horn.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Electronic Elements", "path": "audio-sets/sfx/ElectronicElements.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Glass", "path": "audio-sets/sfx/Glass.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Honk", "path": "audio-sets/sfx/Honk.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Pneumatic", "path": "audio-sets/sfx/Pneumatic.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Rattle", "path": "audio-sets/sfx/Rattle.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Rattle Wood", "path": "audio-sets/sfx/RattleWood.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Toy-horn", "path": "audio-sets/sfx/toy-horn.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Whistle Train", "path": "audio-sets/sfx/WhistleTrain.mp3", "isPlaying": false, "isChecked": false}];
+
+  static List<Map<String, dynamic>> shortMelodiesMap = [{"filename": "Drums", "path": "audio-sets/short melodies/Drums.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Fast Snare Drum Roll", "path": "audio-sets/short melodies/FastSnareDrumRoll.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Guitar Mix", "path": "audio-sets/short melodies/GuitarMIX.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Horn Instrument", "path": "audio-sets/short melodies/HornInstrument.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Percussion-drum", "path": "audio-sets/short melodies/Percussion-Drum.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Rock segues", "path": "audio-sets/short melodies/RockSegues.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Solo Guitar Accents", "path": "audio-sets/short melodies/SoloGuitarAccents.mp3", "isPlaying": false, "isChecked": false}, {"filename": "Timbali", "path": "audio-sets/short melodies/Timbali.mp3", "isPlaying": false, "isChecked": false}];
+
+  static List<Map<String, dynamic>> getSelectedAudioFiles(){
+    List<List<Map<String, dynamic>>> allAudioMaps = [animalsMap, birdsMap, hertzMap, punchesMap, sfxMap, shortMelodiesMap];
+    List<Map<String, dynamic>> _selectedAudioFiles = [];
+    allAudioMaps.forEach((element) {
+      element.forEach((innerElement) {
+        if(innerElement["isChecked"]) {
+          _selectedAudioFiles.add(innerElement);
+        }
+      });
+    });
+    print(_selectedAudioFiles);
+    return _selectedAudioFiles;
+  }
+}

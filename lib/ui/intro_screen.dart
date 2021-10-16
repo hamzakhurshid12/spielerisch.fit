@@ -16,11 +16,11 @@ class IntroScreen extends StatelessWidget {
         if(isVisionModeActive){
           return;
         }
-        final result = await Navigator.pushNamed(context, '/home');
+        /*final result = await Navigator.pushNamed(context, '/home');
         if(result=="restart")
           this.build(context);
         else
-          SystemNavigator.pop();
+          SystemNavigator.pop();*/
       } else {
         await Fluttertoast.showToast(
             msg: "No data synchronised for offline use.\nPlease turn on your internet connection to continue!",
@@ -50,7 +50,7 @@ class IntroScreen extends StatelessWidget {
             child: TextButton(
               onPressed: () async {
                 isVisionModeActive = true;
-                await Navigator.of(context).pushNamed("/vision_intro");
+                await Navigator.of(context).pushNamed("/audio_intro");
                 isVisionModeActive = false;
                 this.build(context);
               },
