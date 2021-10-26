@@ -23,6 +23,8 @@ class AudioHomePage extends StatefulWidget {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
 
+  static double fromDuration;
+  static double toDuration;
   static double totalDuration;
 
   const AudioHomePage({Key key, this.analytics, this.observer})
@@ -57,6 +59,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
 
   Timer stopWatchTimer;
   Timer visionRollingTimer;
+  bool isVisionRollingTimerRunning;
 
   GlobalKey machineKey;
   ScrollController _scrollController = new ScrollController();
@@ -67,7 +70,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
   int visionModeWidgetsRollingIndex = 0;
   List<Widget> selectedRollerWidgetList;
 
-  double totalSelectedSeconds = AudioHomePage.totalDuration;
+  double totalSelectedSeconds = AudioHomePage.fromDuration / 1000;
 
   List<Widget> visionModeOneColorWidgets;
   List<Widget> visionTwoColorWidgets;
@@ -125,10 +128,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
       stopWatchTimer.cancel();
       stopWatchTimer = null;
     }
-    if (visionRollingTimer != null) {
-      visionRollingTimer.cancel();
-      visionRollingTimer = null;
-    }
+    isVisionRollingTimerRunning = false;
   }
 
   @override
@@ -349,10 +349,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
     stopWatchTimer.cancel();
     stopWatchTimer = null;
     }
-    if (visionRollingTimer != null) {
-    visionRollingTimer.cancel();
-    visionRollingTimer = null;
-    }
+    isVisionRollingTimerRunning = false;
     setState(() {
     this.isMachineRunning = !this.isMachineRunning;
     setClockTimerValues();
@@ -415,30 +412,27 @@ class _AudioHomePageState extends State<AudioHomePage> {
     });
   }
 
-  Timer getVisionRollingTimer() {
-    if (visionRollingTimer != null) {
-      visionRollingTimer.cancel();
-      visionRollingTimer = null;
+  Future<void> getVisionRollingTimer() async {
+    isVisionRollingTimerRunning = true;
+    while (isVisionRollingTimerRunning){
+      totalSelectedSeconds = (_random.nextInt((AudioHomePage.toDuration - AudioHomePage.fromDuration).round()) + AudioHomePage.fromDuration)/1000;
+      await Future.delayed(new Duration(milliseconds: (totalSelectedSeconds * 1000).round()), () async {
+        print("Another time period started!");
+        int nextIndex = _random.nextInt(selectedAudioFiles.length);
+        Map<String, dynamic> nextAudio = selectedAudioFiles[nextIndex];
+        await stopAudioPlayer();
+        audioPlayer = await audioCache.loop(nextAudio["path"]);
+        print("Another time period passed!");
+      });
     }
-    return Timer.periodic(
+    /*return Timer.periodic(
         new Duration(milliseconds: (totalSelectedSeconds * 1000).round()),
         (Timer timer) async {
-          int nextIndex = _random.nextInt(selectedAudioFiles.length);
+          /*int nextIndex = _random.nextInt(selectedAudioFiles.length);
           Map<String, dynamic> nextAudio = selectedAudioFiles[nextIndex];
           await stopAudioPlayer();
-          audioPlayer = await audioCache.loop(nextAudio["path"]);
-      setState(() {
-        /*Widget nextWidget = selectedRollerWidgetList[nextIndex];
-        if (currentVisionWidgetOnScreen == nextWidget) {
-          //making sure all widgets are unique consecutively
-          currentVisionWidgetOnScreen = selectedRollerWidgetList[
-              (nextIndex + 1) % selectedRollerWidgetList.length];
-        } else {
-          currentVisionWidgetOnScreen = nextWidget;
-        }*/
-
-      });
-    });
+          audioPlayer = await audioCache.loop(nextAudio["path"]);*/
+    });*/
   }
 
   Future<void> stopAudioPlayer() async {
@@ -588,7 +582,8 @@ class _AudioHomePageState extends State<AudioHomePage> {
 
         stopWatchTimer = getStopWatchTimer();
         currentVisionWidgetOnScreen = selectedRollerWidgetList[0];
-        visionRollingTimer = getVisionRollingTimer();
+        //visionRollingTimer = getVisionRollingTimer();
+        getVisionRollingTimer();
       });
   }
 

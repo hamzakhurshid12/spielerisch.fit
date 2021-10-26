@@ -29,26 +29,18 @@ class _IntroAudio2State extends State<IntroAudio2> {
     "3": VisionColors.threeColors
   };
 
-  String _durationDropDownValue = "1 second";
+  String _durationFromDropDownValue = "1000";
+  String _durationToDropDownValue = "1000";
   List _durationsList = [
-    "1 second",
-    "1.5 seconds",
-    "2 seconds",
-    "2.5 seconds",
-    "3 seconds",
-    "3.5 seconds",
-    "4 seconds"
+    "1000",
+    "1500",
+    "2000",
+    "2500",
+    "3000",
+    "3500",
+    "4000"
   ];
 
-  var _durationListMap = {
-    "1 second": 1.0,
-    "1.5 seconds": 1.5,
-    "2 seconds": 2.0,
-    "2.5 seconds": 2.5,
-    "3 seconds": 3.0,
-    "3.5 seconds": 3.5,
-    "4 seconds": 4.0
-  };
 
   @override
   void initState() {
@@ -81,7 +73,8 @@ class _IntroAudio2State extends State<IntroAudio2> {
                   padding: EdgeInsets.only(top: 28.0),
                 ),
                 buildSelectedAudiosDetailsRow(),
-                buildDurationSelectionRow(),
+                buildDurationFromRow(),
+                buildDurationToRow(),
                 Padding(
                   padding: EdgeInsets.only(top: 28.0),
                 ),
@@ -111,7 +104,15 @@ class _IntroAudio2State extends State<IntroAudio2> {
   TextButton buildStartButton(BuildContext context) {
     return TextButton(
       onPressed: () {
-        AudioHomePage.totalDuration = _durationListMap[_durationDropDownValue];
+        var durationFrom = double.parse(_durationFromDropDownValue);
+        var durationTo = double.parse(_durationToDropDownValue);
+        if(durationFrom>durationTo){
+          final snackBar = SnackBar(content: Text('Please make sure "Duration to" is greater or equal to "Duration from"!'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          return;
+        }
+        AudioHomePage.fromDuration = durationFrom;
+        AudioHomePage.toDuration = durationTo;
         Navigator.of(context).pushNamed("/audio_home");
       },
       child: Text(
@@ -166,55 +167,17 @@ class _IntroAudio2State extends State<IntroAudio2> {
             ],
           ),
         ),
-        /*Expanded(
-          child: DropdownButton(
-            hint: _durationDropDownValue == null
-                ? Text(
-              'None',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: "Open-Sans",
-                  fontSize: 16),
-            )
-                : Text(
-              _durationDropDownValue,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: "Open-Sans",
-                  fontSize: 16),
-            ),
-            dropdownColor: ColorHelper.backgroundCyan,
-            underline: SizedBox(),
-            items: _durationsList
-                .map((e) => DropdownMenuItem(
-              value: e,
-              child: Text(
-                e,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: "Open-Sans",
-                    fontSize: 16),
-              ),
-            ))
-                .toList(),
-            onChanged: (val) {
-              setState(() {
-                _durationDropDownValue = val;
-              });
-            },
-          ),
-        )*/
       ],
     );
   }
 
-  Row buildDurationSelectionRow() {
+  Row buildDurationFromRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
           child: Text(
-            "Duration: ",
+            "Duration from (ms): ",
             style: TextStyle(
                 color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
             textAlign: TextAlign.right,
@@ -225,7 +188,7 @@ class _IntroAudio2State extends State<IntroAudio2> {
         ),
         Expanded(
           child: DropdownButton(
-            hint: _durationDropDownValue == null
+            hint: _durationFromDropDownValue == null
                 ? Text(
                     'None',
                     style: TextStyle(
@@ -234,7 +197,7 @@ class _IntroAudio2State extends State<IntroAudio2> {
                         fontSize: 16),
                   )
                 : Text(
-                    _durationDropDownValue,
+                    _durationFromDropDownValue,
                     style: TextStyle(
                         color: Colors.white,
                         fontFamily: "Open-Sans",
@@ -256,7 +219,64 @@ class _IntroAudio2State extends State<IntroAudio2> {
                 .toList(),
             onChanged: (val) {
               setState(() {
-                _durationDropDownValue = val;
+                _durationFromDropDownValue = val;
+              });
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  Row buildDurationToRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Text(
+            "Duration to (ms): ",
+            style: TextStyle(
+                color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
+            textAlign: TextAlign.right,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+        ),
+        Expanded(
+          child: DropdownButton(
+            hint: _durationToDropDownValue == null
+                ? Text(
+              'None',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Open-Sans",
+                  fontSize: 16),
+            )
+                : Text(
+              _durationToDropDownValue,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Open-Sans",
+                  fontSize: 16),
+            ),
+            dropdownColor: ColorHelper.backgroundCyan,
+            underline: SizedBox(),
+            items: _durationsList
+                .map((e) => DropdownMenuItem(
+              value: e,
+              child: Text(
+                e,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: "Open-Sans",
+                    fontSize: 16),
+              ),
+            ))
+                .toList(),
+            onChanged: (val) {
+              setState(() {
+                _durationToDropDownValue = val;
               });
             },
           ),
