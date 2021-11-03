@@ -107,7 +107,7 @@ class _IntroAudio2State extends State<IntroAudio2> {
         var durationFrom = double.parse(_durationFromDropDownValue);
         var durationTo = double.parse(_durationToDropDownValue);
         if(durationFrom>durationTo){
-          final snackBar = SnackBar(content: Text('Please make sure "Duration to" is greater or equal to "Duration from"!'));
+          final snackBar = SnackBar(content: Text('Please make sure "Duration to" is greater than or equal to "Duration from"!'));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           return;
         }

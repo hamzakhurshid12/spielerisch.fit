@@ -19,6 +19,8 @@ class VisionHomePage extends StatefulWidget {
   final FirebaseAnalytics analytics;
   final FirebaseAnalyticsObserver observer;
 
+  static double fromDuration;
+  static double toDuration;
   static double totalDuration;
   static VisionModeType visionModeType;
   static VisionColors visionModeColors;
@@ -55,6 +57,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
 
   Timer stopWatchTimer;
   Timer visionRollingTimer;
+  bool isVisionRollingTimerRunning;
 
   GlobalKey machineKey;
   ScrollController _scrollController = new ScrollController();
@@ -68,7 +71,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
   VisionModeType currentVisionModeType = VisionModeType.stroop;
   List<Widget> selectedRollerWidgetList;
 
-  double totalSelectedSeconds = VisionHomePage.totalDuration;
+  double totalSelectedSeconds = VisionHomePage.fromDuration / 1000;
 
   List<Widget> visionModeOneColorWidgets;
   List<Widget> visionTwoColorWidgets;
@@ -121,10 +124,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
       stopWatchTimer.cancel();
       stopWatchTimer=null;
     }
-    if(visionRollingTimer!=null){
-      visionRollingTimer.cancel();
-      visionRollingTimer=null;
-    }
+    isVisionRollingTimerRunning = false;
   }
 
   @override
@@ -327,18 +327,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
                         ),
                       ),
                       onTap: () {
-                        if (stopWatchTimer != null) {
-                          stopWatchTimer.cancel();
-                          stopWatchTimer = null;
-                        }
-                        if (visionRollingTimer != null) {
-                          visionRollingTimer.cancel();
-                          visionRollingTimer = null;
-                        }
-                        setState(() {
-                          this.isMachineRunning = !this.isMachineRunning;
-                          setClockTimerValues();
-                        });
+                        stopClock();
                       },
                     ),
                     color: Colors.transparent,
@@ -350,6 +339,18 @@ class _VisionHomePageState extends State<VisionHomePage> {
         ),
       ),
     );
+  }
+
+  void stopClock() async {
+    if (stopWatchTimer != null) {
+      stopWatchTimer.cancel();
+      stopWatchTimer = null;
+    }
+    isVisionRollingTimerRunning = false;
+    setState(() {
+      this.isMachineRunning = !this.isMachineRunning;
+      setClockTimerValues();
+    });
   }
 
   void toggleWidgetLists() {
@@ -509,26 +510,41 @@ class _VisionHomePageState extends State<VisionHomePage> {
     });
   }
 
-  Timer getVisionRollingTimer() {
-    if (visionRollingTimer != null) {
-      visionRollingTimer.cancel();
-      visionRollingTimer = null;
-    }
-    return Timer.periodic(
-        new Duration(milliseconds: (totalSelectedSeconds * 1000).round()),
-        (Timer timer) {
-      setState(() {
+  Future<Timer> getVisionRollingTimer() async {
+    isVisionRollingTimerRunning = true;
+    while (isVisionRollingTimerRunning){
+      totalSelectedSeconds = (_random.nextInt((VisionHomePage.toDuration - VisionHomePage.fromDuration).round()) + VisionHomePage.fromDuration);
+      totalSelectedSeconds = (totalSelectedSeconds - totalSelectedSeconds%100)/1000; //removing milliseconds and centiseconds
+      if(stopWatchTimer==null) {
+        stopWatchTimer = getStopWatchTimer();
+      }
+      await Future.delayed(new Duration(milliseconds: (totalSelectedSeconds*1000).round()), () async {
+        print("Another time period started!");
         int nextIndex = _random.nextInt(selectedRollerWidgetList.length);
         Widget nextWidget = selectedRollerWidgetList[nextIndex];
         if (currentVisionWidgetOnScreen == nextWidget) {
           //making sure all widgets are unique consecutively
-          currentVisionWidgetOnScreen = selectedRollerWidgetList[
-              (nextIndex + 1) % selectedRollerWidgetList.length];
+          currentVisionWidgetOnScreen = selectedRollerWidgetList[(nextIndex + 1) % selectedRollerWidgetList.length];
         } else {
           currentVisionWidgetOnScreen = nextWidget;
         }
       });
-    });
+    }
+    // return Timer.periodic(
+    //     new Duration(milliseconds: (totalSelectedSeconds * 1000).round()),
+    //     (Timer timer) {
+    //   setState(() {
+    //     int nextIndex = _random.nextInt(selectedRollerWidgetList.length);
+    //     Widget nextWidget = selectedRollerWidgetList[nextIndex];
+    //     if (currentVisionWidgetOnScreen == nextWidget) {
+    //       //making sure all widgets are unique consecutively
+    //       currentVisionWidgetOnScreen = selectedRollerWidgetList[
+    //           (nextIndex + 1) % selectedRollerWidgetList.length];
+    //     } else {
+    //       currentVisionWidgetOnScreen = nextWidget;
+    //     }
+    //   });
+    // });
   }
 
   Timer getStopWatchTimer() {
@@ -538,16 +554,19 @@ class _VisionHomePageState extends State<VisionHomePage> {
       stopWatchTimer = null;
     }
 
-    int centiSeconds = (totalSelectedSeconds * 100).round();
+    double currentTotalSelectedSeconds = totalSelectedSeconds;
+    int milliSeconds = (totalSelectedSeconds * 1000).round();
     return Timer.periodic(new Duration(milliseconds: 100), (Timer timer) {
-      centiSeconds -= 10;
-      if (centiSeconds < 0) centiSeconds = (totalSelectedSeconds * 100).round();
-      final int CENTISECONDS_IN_A_SECOND = 100;
-      int seconds = centiSeconds ~/ CENTISECONDS_IN_A_SECOND;
+      milliSeconds -= 100;
+      if (milliSeconds < 0 || currentTotalSelectedSeconds!= totalSelectedSeconds) {
+        milliSeconds = (totalSelectedSeconds * 1000).round();
+        currentTotalSelectedSeconds = totalSelectedSeconds;
+      }
+      int seconds = milliSeconds ~/ 1000;
       setState(() {
         clockDuration = formatter.format(seconds % 60) +
             "." +
-            formatter.format(centiSeconds % 100);
+            formatter.format((milliSeconds % 1000)/10);
       });
     });
   }
@@ -647,18 +666,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
                   ),
                 ),
                 onTap: () {
-                  if (stopWatchTimer != null) {
-                    stopWatchTimer.cancel();
-                    stopWatchTimer = null;
-                  }
-                  if (visionRollingTimer != null) {
-                    visionRollingTimer.cancel();
-                    visionRollingTimer = null;
-                  }
-                  setState(() {
-                    this.isMachineRunning = !this.isMachineRunning;
-                    setClockTimerValues();
-                  });
+                  stopClock();
                 },
               ),
               color: Colors.transparent,
@@ -678,9 +686,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
         }
         infoPicIsVisible = false;
         clockDuration = "";
-
-        stopWatchTimer = getStopWatchTimer();
-        visionRollingTimer = getVisionRollingTimer();
+        getVisionRollingTimer();
       });
   }
 

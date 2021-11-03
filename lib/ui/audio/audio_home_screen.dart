@@ -346,16 +346,16 @@ class _AudioHomePageState extends State<AudioHomePage> {
   void stopClock() async {
     await stopAudioPlayer();
     if (stopWatchTimer != null) {
-    stopWatchTimer.cancel();
-    stopWatchTimer = null;
+      stopWatchTimer.cancel();
+      stopWatchTimer = null;
     }
     isVisionRollingTimerRunning = false;
     setState(() {
-    this.isMachineRunning = !this.isMachineRunning;
-    setClockTimerValues();
-    currentVisionWidgetOnScreen = Image.asset(
-    "assets/images/slotmachine-start-overlay-single-window.png",
-    );
+      this.isMachineRunning = !this.isMachineRunning;
+      setClockTimerValues();
+      currentVisionWidgetOnScreen = Image.asset(
+        "assets/images/slotmachine-start-overlay-single-window.png",
+      );
     });
   }
 
@@ -414,8 +414,12 @@ class _AudioHomePageState extends State<AudioHomePage> {
 
   Future<void> getVisionRollingTimer() async {
     isVisionRollingTimerRunning = true;
-    while (isVisionRollingTimerRunning){
-      totalSelectedSeconds = (_random.nextInt((AudioHomePage.toDuration - AudioHomePage.fromDuration).round()) + AudioHomePage.fromDuration)/1000;
+    while (isVisionRollingTimerRunning) {
+      totalSelectedSeconds = (_random.nextInt((AudioHomePage.toDuration - AudioHomePage.fromDuration).round()) + AudioHomePage.fromDuration);
+      totalSelectedSeconds = (totalSelectedSeconds - totalSelectedSeconds%100)/1000; //removing milliseconds and centiseconds
+      if(stopWatchTimer==null) {
+        stopWatchTimer = getStopWatchTimer();
+      }
       await Future.delayed(new Duration(milliseconds: (totalSelectedSeconds * 1000).round()), () async {
         print("Another time period started!");
         int nextIndex = _random.nextInt(selectedAudioFiles.length);
@@ -450,16 +454,19 @@ class _AudioHomePageState extends State<AudioHomePage> {
       stopWatchTimer = null;
     }
 
-    int centiSeconds = (totalSelectedSeconds * 100).round();
+    double currentTotalSelectedSeconds = totalSelectedSeconds;
+    int milliSeconds = (totalSelectedSeconds * 1000).round();
     return Timer.periodic(new Duration(milliseconds: 100), (Timer timer) {
-      centiSeconds -= 10;
-      if (centiSeconds < 0) centiSeconds = (totalSelectedSeconds * 100).round();
-      final int CENTISECONDS_IN_A_SECOND = 100;
-      int seconds = centiSeconds ~/ CENTISECONDS_IN_A_SECOND;
+      milliSeconds -= 100;
+      if (milliSeconds < 0 || currentTotalSelectedSeconds!= totalSelectedSeconds) {
+        milliSeconds = (totalSelectedSeconds * 1000).round();
+        currentTotalSelectedSeconds = totalSelectedSeconds;
+      }
+      int seconds = milliSeconds ~/ 1000;
       setState(() {
         clockDuration = formatter.format(seconds % 60) +
             "." +
-            formatter.format(centiSeconds % 100);
+            formatter.format((milliSeconds % 1000)/10);
       });
     });
   }
@@ -580,9 +587,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
         infoPicIsVisible = false;
         clockDuration = "";
 
-        stopWatchTimer = getStopWatchTimer();
         currentVisionWidgetOnScreen = selectedRollerWidgetList[0];
-        //visionRollingTimer = getVisionRollingTimer();
         getVisionRollingTimer();
       });
   }
