@@ -5,6 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -83,28 +84,30 @@ class _VisionHomePageState extends State<VisionHomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                icon: "ic_launcher",
-              ),
-            ));
-      }
-    });
+    if(!kIsWeb) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        RemoteNotification notification = message.notification;
+        AndroidNotification android = message.notification?.android;
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channelDescription: channel.description,
+                  icon: "ic_launcher",
+                ),
+              ));
+        }
+      });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-    });
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print('A new onMessageOpenedApp event was published!');
+      });
+    }
 
     clockDuration = "00 : 00";
 
@@ -131,6 +134,9 @@ class _VisionHomePageState extends State<VisionHomePage> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
+    if(kIsWeb && screenWidth>900){
+      screenWidth = screenWidth * 0.3;
+    }
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;
     toggleWidgetLists();
@@ -171,8 +177,13 @@ class _VisionHomePageState extends State<VisionHomePage> {
                             : Container(),
                         Padding(
                           padding: EdgeInsets.only(top: 16),
-                          child: _slotMachineVisionMode(
-                              machineWidth, machineHeight),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _slotMachineVisionMode(
+                                  machineWidth, machineHeight),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -513,7 +524,11 @@ class _VisionHomePageState extends State<VisionHomePage> {
   Future<Timer> getVisionRollingTimer() async {
     isVisionRollingTimerRunning = true;
     while (isVisionRollingTimerRunning){
-      totalSelectedSeconds = (_random.nextInt((VisionHomePage.toDuration - VisionHomePage.fromDuration).round()) + VisionHomePage.fromDuration);
+      if (VisionHomePage.toDuration == VisionHomePage.fromDuration){
+        totalSelectedSeconds = VisionHomePage.fromDuration;
+      } else {
+        totalSelectedSeconds = (_random.nextInt((VisionHomePage.toDuration - VisionHomePage.fromDuration).round()) + VisionHomePage.fromDuration);
+      }
       totalSelectedSeconds = (totalSelectedSeconds - totalSelectedSeconds%100)/1000; //removing milliseconds and centiseconds
       if(stopWatchTimer==null) {
         stopWatchTimer = getStopWatchTimer();
@@ -574,8 +589,8 @@ class _VisionHomePageState extends State<VisionHomePage> {
   Widget _slotMachineVisionMode(double machineWidth, double machineHeight) {
     return Stack(
       children: [
-        // ----------------- Machine ----------------------------------//
-        SizedBox(
+        // ----------------- Machine ----------------------------------/
+         SizedBox(
           width: machineWidth,
           height: machineHeight,
           child: GestureDetector(
@@ -587,7 +602,6 @@ class _VisionHomePageState extends State<VisionHomePage> {
             },
           ),
         ),
-
         // -----------------Roller----------------------------------//
         Positioned(
           top: machineHeight * 0.18,

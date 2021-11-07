@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:roller_list/roller_list.dart';
@@ -76,24 +77,26 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                icon: "ic_launcher",
-              ),
-            ));
-      }
-    });
+    if(!kIsWeb) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        RemoteNotification notification = message.notification;
+        AndroidNotification android = message.notification?.android;
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channelDescription: channel.description,
+                  icon: "ic_launcher",
+                ),
+              ));
+        }
+      });
+    }
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
@@ -233,14 +236,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    if(kIsWeb && screenWidth>900){
+      screenWidth = screenWidth * 0.3;
+    }
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;
     return Scaffold(
@@ -278,8 +278,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         : Container(),
                     Padding(
                       padding: EdgeInsets.only(top: 16),
-                      child: _slotMachineNormalMode(
-                          machineWidth, machineHeight),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _slotMachineNormalMode(
+                              machineWidth, machineHeight),
+                        ],
+                      ),
                     ),
                     (selectedExercise == null || clockType == "")
                         ? Container()

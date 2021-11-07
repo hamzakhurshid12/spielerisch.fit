@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -87,28 +87,30 @@ class _AudioHomePageState extends State<AudioHomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                icon: "ic_launcher",
-              ),
-            ));
-      }
-    });
+    if(!kIsWeb) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        RemoteNotification notification = message.notification;
+        AndroidNotification android = message.notification?.android;
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channelDescription: channel.description,
+                  icon: "ic_launcher",
+                ),
+              ));
+        }
+      });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-    });
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print('A new onMessageOpenedApp event was published!');
+      });
+    }
 
     clockDuration = "00 : 00";
 
@@ -135,6 +137,9 @@ class _AudioHomePageState extends State<AudioHomePage> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
+    if(kIsWeb && screenWidth>900){
+      screenWidth = screenWidth * 0.3;
+    }
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;
     toggleWidgetLists();
@@ -175,8 +180,13 @@ class _AudioHomePageState extends State<AudioHomePage> {
                             : Container(),
                         Padding(
                           padding: EdgeInsets.only(top: 16),
-                          child: _slotMachineVisionMode(
-                              machineWidth, machineHeight),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _slotMachineVisionMode(
+                                  machineWidth, machineHeight),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -415,7 +425,13 @@ class _AudioHomePageState extends State<AudioHomePage> {
   Future<void> getVisionRollingTimer() async {
     isVisionRollingTimerRunning = true;
     while (isVisionRollingTimerRunning) {
-      totalSelectedSeconds = (_random.nextInt((AudioHomePage.toDuration - AudioHomePage.fromDuration).round()) + AudioHomePage.fromDuration);
+      if(AudioHomePage.toDuration == AudioHomePage.fromDuration){
+        totalSelectedSeconds = AudioHomePage.fromDuration;
+      } else {
+        totalSelectedSeconds = (_random.nextInt(
+            (AudioHomePage.toDuration - AudioHomePage.fromDuration).round()) +
+            AudioHomePage.fromDuration);
+      }
       totalSelectedSeconds = (totalSelectedSeconds - totalSelectedSeconds%100)/1000; //removing milliseconds and centiseconds
       if(stopWatchTimer==null) {
         stopWatchTimer = getStopWatchTimer();
@@ -440,7 +456,7 @@ class _AudioHomePageState extends State<AudioHomePage> {
   }
 
   Future<void> stopAudioPlayer() async {
-    audioCache.clearCache();
+    //audioCache.clearCache();
     await audioPlayer?.stop();
     await audioPlayer?.release();
     await audioPlayer?.dispose();

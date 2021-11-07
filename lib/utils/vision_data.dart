@@ -15,7 +15,9 @@ class VisionData {
   static Future<String> getDataFromServer() async {
     try {
       var uriResponse = await http.get(
+          //Uri.parse("http://localhost/projects/modes.json"));
           Uri.parse("https://spielerisch.fit/modes.json"));
+
       var responseStr = utf8.decode(uriResponse.bodyBytes);
       prefs.setString("vision_json", responseStr);
       prefs.commit();

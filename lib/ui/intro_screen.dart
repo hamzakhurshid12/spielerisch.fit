@@ -8,19 +8,19 @@ import 'package:fluttertoast/fluttertoast.dart';
 class IntroScreen extends StatelessWidget {
   bool isInternetConnected = true;
   bool isVisionModeActive = false;
+  bool isAudioModeActive = false;
 
   @override
   Widget build(BuildContext context) {
-    new Future.delayed(const Duration(seconds: 5), () async {
+    new Future.delayed(const Duration(seconds: 25), () async {
       if(ExercisesData.dataRecordsDe.length > 0 || ExercisesData.dataRecordsEn.length > 0) {
-        if(isVisionModeActive){
-          return;
+        if(!isVisionModeActive){
+          final result = await Navigator.pushNamed(context, '/home');
+          if(result=="restart")
+            this.build(context);
+          else
+            SystemNavigator.pop();
         }
-        /*final result = await Navigator.pushNamed(context, '/home');
-        if(result=="restart")
-          this.build(context);
-        else
-          SystemNavigator.pop();*/
       } else {
         await Fluttertoast.showToast(
             msg: "No data synchronised for offline use.\nPlease turn on your internet connection to continue!",

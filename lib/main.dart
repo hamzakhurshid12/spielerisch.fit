@@ -39,7 +39,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'default_channel', // id
   'Default Notifications', // title
-  'This channel is used for notifications.', // description
+  description: 'This channel is used for notifications.', // description
   importance: Importance.high,
 );
 
