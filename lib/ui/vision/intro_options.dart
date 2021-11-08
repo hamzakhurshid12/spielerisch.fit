@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/ui/vision/vision_home_screen.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
+import 'package:spielerisch_fit/utils/settings_corner_button.dart';
 
 class IntroVision extends StatefulWidget {
   @override
@@ -110,6 +111,7 @@ class _IntroVisionState extends State<IntroVision> {
               },
             ),
           ),
+          SettingsCornerButton(),
         ],
       )),
     );
@@ -117,7 +119,7 @@ class _IntroVisionState extends State<IntroVision> {
 
   TextButton buildStartButton(BuildContext context) {
     return TextButton(
-      onPressed: () {
+      onPressed: () async {
         var durationFrom = double.parse(_durationFromDropDownValue);
         var durationTo = double.parse(_durationToDropDownValue);
         if(durationFrom>durationTo){
@@ -130,7 +132,9 @@ class _IntroVisionState extends State<IntroVision> {
         VisionHomePage.toDuration = durationTo;
         VisionHomePage.visionModeColors = _colorsListMap[_colorsDropDownValue];
         VisionHomePage.visionModeType = _modesListMap[_modeDropDownValue];
-        Navigator.of(context).pushNamed("/vision_home");
+        var result = await Navigator.of(context).pushNamed("/vision_home");
+        if(result=="restart")
+          Navigator.pop(context, result);
       },
       child: Text(
         "Start",

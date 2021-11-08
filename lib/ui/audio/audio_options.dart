@@ -4,6 +4,7 @@ import 'package:spielerisch_fit/ui/vision/vision_home_screen.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
 import 'package:spielerisch_fit/utils/audio_data.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:spielerisch_fit/utils/settings_corner_button.dart';
 
 import 'audio_home_screen.dart';
 
@@ -138,6 +139,7 @@ class _IntroAudioState extends State<IntroAudio> {
               },
             ),
           ),
+          SettingsCornerButton(),
         ],
       )),
     );
@@ -147,18 +149,14 @@ class _IntroAudioState extends State<IntroAudio> {
     return SizedBox(
       width: 100.0,
       child: TextButton(
-        onPressed: () {
+        onPressed: () async {
           if(AudioData.getSelectedAudioFiles().length==0){
             final snackBar = SnackBar(content: Text('Please select audio files to continue!'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } else {
-            //AudioHomePage.totalDuration = _durationListMap[_durationDropDownValue];
-            //AudioHomePage.totalDuration = 2.0;
-            /*AudioHomePage.visionModeColors = _colorsListMap[_colorsDropDownValue];
-          AudioHomePage.visionModeType = _modesListMap[_modeDropDownValue];*/
-            //Navigator.of(context).pushNamed("/audio_home");
-            Navigator.of(context).pushNamed("/audio_intro_level_2");
-            //AudioData.getSelectedAudioFiles();
+            final result = await Navigator.of(context).pushNamed('/audio_intro_level_2');
+            if (result == "restart")
+              Navigator.of(context).pop(result);
           }
         },
         child: Text(

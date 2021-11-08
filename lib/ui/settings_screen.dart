@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../main.dart';
 
@@ -139,6 +140,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         )
                       ],
                     ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(28.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            await launch('https://www.spielerisch.fit/legal');
+                          },
+                          child: Text(
+                            "Legal",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Open-Sans",
+                                fontSize: 16,
+                                decoration: TextDecoration.underline
+                            ),
+                            textAlign: TextAlign.center,
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                          onTap: () async {
+                              await launch('https://www.spielerisch.fit/privacy');
+                          },
+                          child: Text(
+                            "Privacy",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Open-Sans",
+                                fontSize: 16,
+                                decoration: TextDecoration.underline
+                            ),
+                            textAlign: TextAlign.center,
+                          )
+                      ),
+                    ],
                   ),
                 ],
               ),

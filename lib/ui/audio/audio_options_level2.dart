@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/ui/vision/vision_home_screen.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
 import 'package:spielerisch_fit/utils/audio_data.dart';
+import 'package:spielerisch_fit/utils/settings_corner_button.dart';
 
 import 'audio_home_screen.dart';
 
@@ -96,6 +97,7 @@ class _IntroAudio2State extends State<IntroAudio2> {
               },
             ),
           ),
+          SettingsCornerButton(),
         ],
       )),
     );
@@ -103,7 +105,7 @@ class _IntroAudio2State extends State<IntroAudio2> {
 
   TextButton buildStartButton(BuildContext context) {
     return TextButton(
-      onPressed: () {
+      onPressed: () async {
         var durationFrom = double.parse(_durationFromDropDownValue);
         var durationTo = double.parse(_durationToDropDownValue);
         if(durationFrom>durationTo){
@@ -113,7 +115,9 @@ class _IntroAudio2State extends State<IntroAudio2> {
         }
         AudioHomePage.fromDuration = durationFrom;
         AudioHomePage.toDuration = durationTo;
-        Navigator.of(context).pushNamed("/audio_home");
+        var result = await Navigator.of(context).pushNamed("/audio_home");
+        if(result=="restart")
+          Navigator.pop(context, result);
       },
       child: Text(
         "Start",

@@ -49,7 +49,7 @@ dependency_overrides:
   args: ^0.12.1
   dbus: ^0.5.0
   petitparser: ^4.0.0
-  xml: ^4.2.0
+  xml: ^5.3.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.8.0

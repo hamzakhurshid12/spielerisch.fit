@@ -18,6 +18,7 @@ import 'package:spielerisch_fit/main.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
+import 'package:spielerisch_fit/utils/settings_corner_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -238,8 +239,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    if(kIsWeb && screenWidth>900){
-      screenWidth = screenWidth * 0.3;
+    if (kIsWeb){
+      if(screenWidth>1500)
+        screenWidth = screenWidth * 0.3;
+      else if (screenWidth>1000)
+        screenWidth = screenWidth * 0.5;
     }
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;
@@ -417,23 +421,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-              Positioned(
-                top: 0.0,
-                right: 0.0,
-                child: GestureDetector(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    color: Color.fromRGBO(148, 189, 60, 1.0),
-                    child: Image.asset("assets/images/menu_icon.png"),
-                  ),
-                  onTap: () async {
-                    final result =
-                    await Navigator.of(context).pushNamed('/settings');
-                    if (result == "restart") Navigator.of(context).pop(result);
-                  },
-                ),
-              ),
+              SettingsCornerButton(),
             ],
           ),
         ),

@@ -137,8 +137,11 @@ class _AudioHomePageState extends State<AudioHomePage> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    if(kIsWeb && screenWidth>900){
-      screenWidth = screenWidth * 0.3;
+    if (kIsWeb){
+      if(screenWidth>1500)
+        screenWidth = screenWidth * 0.3;
+      else if (screenWidth>1000)
+        screenWidth = screenWidth * 0.5;
     }
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;

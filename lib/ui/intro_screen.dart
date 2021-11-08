@@ -7,14 +7,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class IntroScreen extends StatelessWidget {
   bool isInternetConnected = true;
-  bool isVisionModeActive = false;
+  static bool isVisionModeActive = false;
   bool isAudioModeActive = false;
 
   @override
   Widget build(BuildContext context) {
-    new Future.delayed(const Duration(seconds: 25), () async {
+    new Future.delayed(const Duration(seconds: 5), () async {
       if(ExercisesData.dataRecordsDe.length > 0 || ExercisesData.dataRecordsEn.length > 0) {
-        if(!isVisionModeActive){
+        if(!IntroScreen.isVisionModeActive){
           final result = await Navigator.pushNamed(context, '/home');
           if(result=="restart")
             this.build(context);
@@ -55,9 +55,13 @@ class IntroScreen extends StatelessWidget {
                   Expanded(
                     child: TextButton(
                       onPressed: () async {
-                        isVisionModeActive = true;
-                        await Navigator.of(context).pushNamed("/vision_intro");
-                        isVisionModeActive = false;
+                        IntroScreen.isVisionModeActive = true;
+                        final result = await Navigator.pushNamed(context, '/vision_intro');
+                        if(result=="restart")
+                          this.build(context);
+                        else
+                          SystemNavigator.pop();
+                        IntroScreen.isVisionModeActive = false;
                         this.build(context);
                       },
                       child: Text(
@@ -69,9 +73,13 @@ class IntroScreen extends StatelessWidget {
                   Expanded(
                     child: TextButton(
                       onPressed: () async {
-                        isVisionModeActive = true;
-                        await Navigator.of(context).pushNamed("/audio_intro");
-                        isVisionModeActive = false;
+                        IntroScreen.isVisionModeActive = true;
+                        final result = await Navigator.pushNamed(context, '/audio_intro');
+                        if(result=="restart")
+                          this.build(context);
+                        else
+                          SystemNavigator.pop();
+                        IntroScreen.isVisionModeActive = false;
                         this.build(context);
                       },
                       child: Text(
