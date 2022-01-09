@@ -94,6 +94,16 @@ class MyApp extends StatelessWidget {
     } else {
       AppLocalization.load(Locale("de", "DE"));
     }
+
+    precacheImage(
+      Image.asset("assets/images/spinner-single-window-big-running.png").image,
+      context,
+    );
+    precacheImage(
+      Image.asset("assets/images/spinner-single-window-big.png").image,
+      context,
+    );
+
     return MaterialApp(
       navigatorKey: navKey, // GlobalKey()
       initialRoute: '/',

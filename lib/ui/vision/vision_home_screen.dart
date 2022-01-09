@@ -238,7 +238,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
                         child: Icon(Icons.arrow_back_ios, color: Colors.white),
                       ),
                       onTap: () {
-                          Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       },
                     ),
                   ),
@@ -689,6 +689,16 @@ class _VisionHomePageState extends State<VisionHomePage> {
                 },
               ),
               color: Colors.transparent,
+            ),
+            Positioned( //Pre-loading the image asset to avoid flickering
+              // upon loading of asset first-time during runtime
+              top: 0.0,
+              left: 0.0,
+              child: Container(
+                  width: 0.0,
+                  height: 0.0,
+                  child: Image.asset("assets/images/spinner-big-running.png")
+              ),
             ),
           ]),
         ),

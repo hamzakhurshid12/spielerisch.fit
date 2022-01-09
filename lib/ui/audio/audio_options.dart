@@ -127,6 +127,21 @@ class _IntroAudioState extends State<IntroAudio> {
           ),
           Positioned(
             top: 0.0,
+            left: 0.0,
+            child: GestureDetector(
+              child: Container(
+                width: 40,
+                height: 40,
+                color: Color.fromRGBO(148, 189, 60, 1.0),
+                child: Icon(Icons.arrow_back_ios, color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          Positioned(
+            top: 0.0,
             right: 0.0,
             child: GestureDetector(
               child: Container(

@@ -421,6 +421,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              Positioned(
+                top: 0.0,
+                left: 0.0,
+                child: GestureDetector(
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    color: Color.fromRGBO(148, 189, 60, 1.0),
+                    child: Icon(Icons.arrow_back_ios, color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
               SettingsCornerButton(),
             ],
           ),
@@ -437,9 +452,8 @@ class _MyHomePageState extends State<MyHomePage> {
           width: machineWidth,
           height: machineHeight,
           child: GestureDetector(
-            child: Image.asset(isMachineRunning
-                ? "assets/images/spinner-big-running.png"
-                : "assets/images/spinner-big.png"),
+            child: isMachineRunning? Image.asset("assets/images/spinner-big-running.png") :
+            Image.asset("assets/images/spinner-big.png"),
             onTap: () {
               normalModeMachineOnTap();
             },
@@ -601,6 +615,16 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.transparent,
             ),
           ]),
+        ),
+        Positioned( //Pre-loading the image asset to avoid flickering
+          // upon loading of asset first-time during runtime
+          top: 0.0,
+          left: 0.0,
+          child: Container(
+              width: 0.0,
+              height: 0.0,
+              child: Image.asset("assets/images/spinner-big-running.png")
+          ),
         ),
       ],
     );
@@ -783,3 +807,4 @@ class _MyHomePageState extends State<MyHomePage> {
     infoPic = null;
   }
 }
+

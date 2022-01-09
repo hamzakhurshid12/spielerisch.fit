@@ -19,8 +19,8 @@ class ExercisesData {
   static Future<String> getDataFromServer() async {
     try {
       var uriResponse = await http.get(
-          //Uri.parse("http://localhost/projects/exercises.json"));
-          Uri.parse("https://spielerisch.fit/exercises.json"));
+          Uri.parse("http://localhost/projects/exercises.json"));
+          //Uri.parse("https://spielerisch.fit/exercises.json"));
       var responseStr = utf8.decode(uriResponse.bodyBytes);
       prefs.setString("exercises_json", responseStr);
       prefs.commit();

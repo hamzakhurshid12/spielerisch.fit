@@ -15,11 +15,11 @@ class IntroScreen extends StatelessWidget {
     new Future.delayed(const Duration(seconds: 5), () async {
       if(ExercisesData.dataRecordsDe.length > 0 || ExercisesData.dataRecordsEn.length > 0) {
         if(!IntroScreen.isVisionModeActive){
-          final result = await Navigator.pushNamed(context, '/home');
+          /*final result = await Navigator.pushNamed(context, '/home');
           if(result=="restart")
             this.build(context);
           else
-            SystemNavigator.pop();
+            SystemNavigator.pop();*/
         }
       } else {
         await Fluttertoast.showToast(
@@ -66,6 +66,23 @@ class IntroScreen extends StatelessWidget {
                       },
                       child: Text(
                         "Vision mode",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () async {
+                        IntroScreen.isVisionModeActive = true;
+                        final result = await Navigator.pushNamed(context, '/home');
+                        if(result=="restart")
+                          this.build(context);
+                        else
+                          SystemNavigator.pop();
+                        this.build(context);
+                      },
+                      child: Text(
+                        "Normal mode",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
