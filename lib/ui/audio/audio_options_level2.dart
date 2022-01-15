@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/ui/vision/vision_home_screen.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
 import 'package:spielerisch_fit/utils/audio_data.dart';
+import 'package:spielerisch_fit/utils/number_input_text_field.dart';
 import 'package:spielerisch_fit/utils/settings_corner_button.dart';
 
 import 'audio_home_screen.dart';
@@ -121,8 +122,18 @@ class _IntroAudio2State extends State<IntroAudio2> {
   TextButton buildStartButton(BuildContext context) {
     return TextButton(
       onPressed: () async {
-        var durationFrom = double.parse(_durationFromDropDownValue);
-        var durationTo = double.parse(_durationToDropDownValue);
+        var durationFrom;
+        var durationTo;
+        try {
+          durationFrom = double.parse(_durationFromDropDownValue);
+          durationTo = double.parse(_durationToDropDownValue);
+        } on FormatException {
+          final snackBar = SnackBar(
+              content: Text(
+                  'Please make sure you have entered valid durations!'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          return;
+        }
         if(durationFrom>durationTo){
           final snackBar = SnackBar(content: Text('Please make sure "Duration to" is greater than or equal to "Duration from"!'));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -194,55 +205,23 @@ class _IntroAudio2State extends State<IntroAudio2> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
-          child: Text(
-            "Duration from (ms): ",
-            style: TextStyle(
-                color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
-            textAlign: TextAlign.right,
-          ),
+        Text(
+          "Duration from (ms): ",
+          style: TextStyle(
+              color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
+          textAlign: TextAlign.right,
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
         ),
-        Expanded(
-          child: DropdownButton(
-            hint: _durationFromDropDownValue == null
-                ? Text(
-                    'None',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  )
-                : Text(
-                    _durationFromDropDownValue,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  ),
-            dropdownColor: ColorHelper.backgroundCyan,
-            underline: SizedBox(),
-            items: _durationsList
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontSize: 16),
-                      ),
-                    ))
-                .toList(),
-            onChanged: (val) {
-              setState(() {
-                _durationFromDropDownValue = val;
-              });
-            },
+        Container(
+          width: 200,
+          child: NumberInputTextField(onChangeTextField: (value){
+            _durationFromDropDownValue = value;
+          },
+            text: _durationFromDropDownValue,
           ),
-        )
+        ),
       ],
     );
   }
@@ -251,55 +230,23 @@ class _IntroAudio2State extends State<IntroAudio2> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
-          child: Text(
-            "Duration to (ms): ",
-            style: TextStyle(
-                color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
-            textAlign: TextAlign.right,
-          ),
+        Text(
+          "Duration to (ms): ",
+          style: TextStyle(
+              color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
+          textAlign: TextAlign.right,
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
         ),
-        Expanded(
-          child: DropdownButton(
-            hint: _durationToDropDownValue == null
-                ? Text(
-              'None',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: "Open-Sans",
-                  fontSize: 16),
-            )
-                : Text(
-              _durationToDropDownValue,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: "Open-Sans",
-                  fontSize: 16),
-            ),
-            dropdownColor: ColorHelper.backgroundCyan,
-            underline: SizedBox(),
-            items: _durationsList
-                .map((e) => DropdownMenuItem(
-              value: e,
-              child: Text(
-                e,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: "Open-Sans",
-                    fontSize: 16),
-              ),
-            ))
-                .toList(),
-            onChanged: (val) {
-              setState(() {
-                _durationToDropDownValue = val;
-              });
-            },
+        Container(
+          width: 200,
+          child: NumberInputTextField(onChangeTextField: (value){
+            _durationToDropDownValue = value;
+          },
+            text: _durationToDropDownValue,
           ),
-        )
+        ),
       ],
     );
   }

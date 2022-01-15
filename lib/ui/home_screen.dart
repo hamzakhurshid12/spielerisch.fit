@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    if(!kIsWeb) {
+    if (!kIsWeb) {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         RemoteNotification notification = message.notification;
         AndroidNotification android = message.notification?.android;
@@ -103,32 +103,29 @@ class _MyHomePageState extends State<MyHomePage> {
       print('A new onMessageOpenedApp event was published!');
     });
 
-    clockCaption = AppLocalization
-        .of(MyApp.navKey.currentContext)
-        .stopwatch;
+    clockCaption = AppLocalization.of(MyApp.navKey.currentContext).stopwatch;
     clockDuration = "00 : 00 : 00 : 00";
 
     chosenLanguageRecords = AppLocalization.chosenLanguageCode == "de_DE"
         ? ExercisesData.dataRecordsDe
         : ExercisesData.dataRecordsEn;
     excercisesRollerItems = chosenLanguageRecords
-        .map((e) =>
-        Padding(
-          padding: EdgeInsets.all(2.0),
-          child: Center(
-            child: Text(
-              e.shortname
-                  .replaceAll("<br/>", "\n")
-                  .replaceAll("</br>", "\n")
-                  .replaceAll("<br>", "\n"),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: ColorHelper.red,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
-        ))
+        .map((e) => Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Center(
+                child: Text(
+                  e.shortname
+                      .replaceAll("<br/>", "\n")
+                      .replaceAll("</br>", "\n")
+                      .replaceAll("<br>", "\n"),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: ColorHelper.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ))
         .toList();
 
     excercisesRollerItems.insert(
@@ -141,20 +138,19 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
 
     values = VALUES
-        .map((val) =>
-        Padding(
-          padding: EdgeInsets.all(2.0),
-          child: Center(
-            child: Text(
-              val.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: ColorHelper.red,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
-        ))
+        .map((val) => Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Center(
+                child: Text(
+                  val.toString(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: ColorHelper.red,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ))
         .toList();
 
     values.insert(
@@ -167,58 +163,33 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
 
     TIMESSECONDS = [
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .seconds,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .times,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .seconds,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .times,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .seconds,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .times,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .seconds,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .times,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .seconds,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .times,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .seconds,
-      AppLocalization
-          .of(MyApp.navKey.currentContext)
-          .times
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times,
+      AppLocalization.of(MyApp.navKey.currentContext).seconds,
+      AppLocalization.of(MyApp.navKey.currentContext).times
     ];
     timesseconds = TIMESSECONDS
-        .map<Widget>((val) =>
-        Padding(
-          padding: EdgeInsets.all(2.0),
-          child: Center(
-            child: Text(
-              val,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: ColorHelper.red,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
-        ))
+        .map<Widget>((val) => Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Center(
+                child: Text(
+                  val,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: ColorHelper.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ))
         .toList();
     timesseconds.insert(
         0,
@@ -239,11 +210,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    if (kIsWeb){
-      if(screenWidth>1500)
+    if (kIsWeb) {
+      if (screenWidth > 1500)
         screenWidth = screenWidth * 0.3;
-      else if (screenWidth>1000)
-        screenWidth = screenWidth * 0.5;
+      else if (screenWidth > 1000) screenWidth = screenWidth * 0.5;
     }
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;
@@ -261,9 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Padding(
                         padding: EdgeInsets.only(top: 20),
                         child: Text(
-                          AppLocalization
-                              .of(context)
-                              .pushforyourluck,
+                          AppLocalization.of(context).pushforyourluck,
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: "Open-Sans",
@@ -273,151 +241,159 @@ class _MyHomePageState extends State<MyHomePage> {
                         )),
                     AppLocalization.chosenLanguageCode == "de_DE"
                         ? Padding(
-                      padding: EdgeInsets.only(top: 0),
-                      child: SizedBox(
-                          height: 40,
-                          child: Image.asset(
-                              "assets/images/logo-spielerisch-fit.png")),
-                    )
+                            padding: EdgeInsets.only(top: 0),
+                            child: SizedBox(
+                                height: 40,
+                                child: Image.asset(
+                                    "assets/images/logo-spielerisch-fit.png")),
+                          )
                         : Container(),
                     Padding(
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _slotMachineNormalMode(
-                              machineWidth, machineHeight),
+                          _slotMachineNormalMode(machineWidth, machineHeight),
                         ],
                       ),
                     ),
                     (selectedExercise == null || clockType == "")
                         ? Container()
                         : Padding(
-                      padding: EdgeInsets.all(machineWidth * 0.04),
-                      child: Text(
-                        selectedDuration.toString() +
-                            " " +
-                            selectedTimesSeconds +
-                            "\n" +
-                            selectedExercise.shortname
-                                .replaceAll("\n", " "),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontWeight: FontWeight.w200,
-                            fontSize: 22),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                            padding: EdgeInsets.all(machineWidth * 0.04),
+                            child: Text(
+                              selectedDuration.toString() +
+                                  " " +
+                                  selectedTimesSeconds +
+                                  "\n" +
+                                  selectedExercise.shortname
+                                      .replaceAll("\n", " "),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Open-Sans",
+                                  fontWeight: FontWeight.w200,
+                                  fontSize: 22),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                     (selectedExercise == null ||
-                        selectedExercise.info == "" ||
-                        clockType == "")
+                            selectedExercise.info == "" ||
+                            clockType == "")
                         ? Container()
                         : Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: machineWidth * 0.04),
-                      child: Text(
-                        selectedExercise.info,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: machineWidth * 0.04),
+                            child: Text(
+                              selectedExercise.info,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Open-Sans",
+                                  fontSize: 14),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                     //<-------------------- ICONS ROW ----------------------------------->
                     (!isMachineDirty || clockType == "")
                         ? Container()
                         : Padding(
-                      padding: EdgeInsets.all(machineWidth * 0.04),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          //<-------------------- Refresh Icon ----------------------------------->
-                          GestureDetector(
-                            child: SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: Image.asset(
-                                  "assets/images/reload_icon.png"),
+                            padding: EdgeInsets.all(machineWidth * 0.04),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                //<-------------------- Refresh Icon ----------------------------------->
+                                GestureDetector(
+                                  child: SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: Image.asset(
+                                        "assets/images/reload_icon.png"),
+                                  ),
+                                  onTap: () {
+                                    normalModeMachineOnTap();
+                                  },
+                                ),
+                                //<-------------------- Info Pic Icon ----------------------------------->
+                                infoPic == null
+                                    ? Container()
+                                    : Padding(
+                                        padding: EdgeInsets.only(left: 12),
+                                        child: GestureDetector(
+                                          child: SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: Image.asset(
+                                                "assets/images/camera_icon.png"),
+                                          ),
+                                          onTap: () {
+                                            setState(() {
+                                              infoPicIsVisible =
+                                                  !infoPicIsVisible;
+                                              Future.delayed(
+                                                  Duration(milliseconds: 100),
+                                                  () {
+                                                _scrollController.animateTo(
+                                                    _scrollController.position
+                                                        .maxScrollExtent,
+                                                    duration: Duration(
+                                                        milliseconds: 500),
+                                                    curve: Curves.easeOut);
+                                              });
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                //<-------------------- Video Link Icon ----------------------------------->
+                                selectedExercise.link == "" ||
+                                        selectedExercise.link == null
+                                    ? Container()
+                                    : Padding(
+                                        padding: EdgeInsets.only(left: 12),
+                                        child: GestureDetector(
+                                          child: SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: Image.asset(
+                                                "assets/images/info_icon.png"),
+                                          ),
+                                          onTap: () async {
+                                            if (await canLaunch(
+                                                selectedExercise.link))
+                                              await launch(
+                                                  selectedExercise.link);
+                                          },
+                                        ),
+                                      ),
+                              ],
                             ),
-                            onTap: () {
-                              normalModeMachineOnTap();
-                            },
                           ),
-                          //<-------------------- Info Pic Icon ----------------------------------->
-                          infoPic == null
-                              ? Container()
-                              : Padding(
-                            padding: EdgeInsets.only(left: 12),
-                            child: GestureDetector(
-                              child: SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: Image.asset(
-                                    "assets/images/camera_icon.png"),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  infoPicIsVisible =
-                                  !infoPicIsVisible;
-                                  Future.delayed(
-                                      Duration(milliseconds: 100),
-                                          () {
-                                        _scrollController.animateTo(
-                                            _scrollController.position
-                                                .maxScrollExtent,
-                                            duration: Duration(
-                                                milliseconds: 500),
-                                            curve: Curves.easeOut);
-                                      });
-                                });
-                              },
-                            ),
-                          ),
-                          //<-------------------- Video Link Icon ----------------------------------->
-                          selectedExercise.link == "" ||
-                              selectedExercise.link == null
-                              ? Container()
-                              : Padding(
-                            padding: EdgeInsets.only(left: 12),
-                            child: GestureDetector(
-                              child: SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: Image.asset(
-                                    "assets/images/info_icon.png"),
-                              ),
-                              onTap: () async {
-                                if (await canLaunch(
-                                    selectedExercise.link))
-                                  await launch(
-                                      selectedExercise.link);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     //<-------------------- Info Picture ----------------------------------->
                     (infoPic == null || !infoPicIsVisible)
                         ? Container()
                         : Padding(
-                        padding: EdgeInsets.all(machineWidth * 0.04),
-                        child: infoPic),
+                            padding: EdgeInsets.all(machineWidth * 0.04),
+                            child: infoPic),
                     //<-------------------- Partner ----------------------------------->
                     (!isMachineDirty || clockType == "")
-                        ? Container() : selectedExercise.partner == "" ||
-                        ExercisesData.partnersMap[selectedExercise.partner] ==
-                            null
                         ? Container()
-                        : SizedBox(
-                        width: machineWidth * 0.6,
-                        child: Image.asset(
-                            "assets/images/partner (" + ExercisesData
-                                .partnersMap[selectedExercise.partner]
-                                .toString() + ").png")
-                    ),
+                        : selectedExercise.partner == "" ||
+                                ExercisesData.partnersMap[
+                                        selectedExercise.partner] ==
+                                    null
+                            ? Container()
+                            : GestureDetector(
+                                onTap: () async {await launch(ExercisesData.partnersUrlsMap[ExercisesData.partnersMap[
+                                selectedExercise.partner]
+                                    .toString()].toString());},
+                                child: SizedBox(
+                                    width: machineWidth * 0.6,
+                                    child: Image.asset(
+                                        "assets/images/partner (" +
+                                            ExercisesData.partnersMap[
+                                                    selectedExercise.partner]
+                                                .toString() +
+                                            ").png"),
+                                ),
+                              ),
                   ],
                 ),
               ),
@@ -452,8 +428,9 @@ class _MyHomePageState extends State<MyHomePage> {
           width: machineWidth,
           height: machineHeight,
           child: GestureDetector(
-            child: isMachineRunning? Image.asset("assets/images/spinner-big-running.png") :
-            Image.asset("assets/images/spinner-big.png"),
+            child: isMachineRunning
+                ? Image.asset("assets/images/spinner-big-running.png")
+                : Image.asset("assets/images/spinner-big.png"),
             onTap: () {
               normalModeMachineOnTap();
             },
@@ -616,15 +593,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ]),
         ),
-        Positioned( //Pre-loading the image asset to avoid flickering
+        Positioned(
+          //Pre-loading the image asset to avoid flickering
           // upon loading of asset first-time during runtime
           top: 0.0,
           left: 0.0,
           child: Container(
               width: 0.0,
               height: 0.0,
-              child: Image.asset("assets/images/spinner-big-running.png")
-          ),
+              child: Image.asset("assets/images/spinner-big-running.png")),
         ),
       ],
     );
@@ -756,7 +733,7 @@ class _MyHomePageState extends State<MyHomePage> {
         new Timer.periodic(
           //Machine running timer
           _ROTATION_DURATION,
-              (Timer timer) {
+          (Timer timer) {
             setState(() {
               this.isMachineRunning = !this.isMachineRunning;
               print(selectedDuration);
@@ -766,18 +743,12 @@ class _MyHomePageState extends State<MyHomePage> {
               timer.cancel();
               loadInfoPic();
               clockType = selectedTimesSeconds ==
-                  AppLocalization
-                      .of(MyApp.navKey.currentContext)
-                      .seconds
+                      AppLocalization.of(MyApp.navKey.currentContext).seconds
                   ? "clock"
                   : "stopwatch";
               clockCaption = clockType == "stopwatch"
-                  ? AppLocalization
-                  .of(MyApp.navKey.currentContext)
-                  .stopwatch
-                  : AppLocalization
-                  .of(MyApp.navKey.currentContext)
-                  .timer;
+                  ? AppLocalization.of(MyApp.navKey.currentContext).stopwatch
+                  : AppLocalization.of(MyApp.navKey.currentContext).timer;
               setClockTimerValues();
             });
             Future.delayed(Duration(milliseconds: 200), () {
@@ -807,4 +778,3 @@ class _MyHomePageState extends State<MyHomePage> {
     infoPic = null;
   }
 }
-
