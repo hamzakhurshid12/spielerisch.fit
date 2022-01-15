@@ -95,18 +95,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: Text(
-                              "Exercises type: ",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Open-Sans",
-                                  fontSize: 16),
-                              textAlign: TextAlign.center,
-                            ),
+                        Padding(
+                            padding: EdgeInsets.only(right: 30.0),
+                            child: Text(
+                                "Exercises type: ",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: "Open-Sans",
+                                    fontSize: 16),
+                                textAlign: TextAlign.right,
+                              ),
                           ),
-                        Expanded(
-                            child: DropdownButton(
+                        DropdownButton(
                               hint: _dropDownValue == null
                                   ? Text('Type', style: TextStyle(
                                   color: Colors.white,
@@ -137,7 +137,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 });
                               },
                             ),
-                        )
                       ],
                     ),
                   ),
