@@ -82,6 +82,8 @@ class _VisionHomePageState extends State<VisionHomePage> {
 
   bool isFullScreen = false;
 
+  Widget cacheStack;
+
   @override
   void initState() {
     super.initState();
@@ -155,6 +157,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
               width: MediaQuery.of(context).size.width,
               child: Stack(
                 children: [
+                  cacheStack,
                   Positioned(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -501,6 +504,14 @@ class _VisionHomePageState extends State<VisionHomePage> {
 
     var bearImagesList = ['assets/images/fitboxenkids-baer-back-blau.png', 'assets/images/fitboxenkids-baer-back-gelb.png', 'assets/images/fitboxenkids-baer-back-gruen.png', 'assets/images/fitboxenkids-baer-back-rot.png', 'assets/images/fitboxenkids-baer-cross-blau.png', 'assets/images/fitboxenkids-baer-cross-gelb.png', 'assets/images/fitboxenkids-baer-cross-gruen.png', 'assets/images/fitboxenkids-baer-cross-rot.png', 'assets/images/fitboxenkids-baer-front-blau.png', 'assets/images/fitboxenkids-baer-front-gelb.png', 'assets/images/fitboxenkids-baer-front-gruen.png', 'assets/images/fitboxenkids-baer-front-rot.png', 'assets/images/fitboxenkids-baer-jab-blau.png', 'assets/images/fitboxenkids-baer-jab-gelb.png', 'assets/images/fitboxenkids-baer-jab-gruen.png', 'assets/images/fitboxenkids-baer-jab-rot.png'];
     visionBearWidgets = bearImagesList.map((e) => Image.asset(e)).toList();
+    //pre-caching all images
+    cacheStack = Container(
+      width: 0,
+      height: 0,
+      child: Column(
+        children: visionBearWidgets,
+      )
+    );
 
     if(VisionHomePage.visionModeType==VisionModeType.bear){
       selectedRollerWidgetList = visionBearWidgets;
