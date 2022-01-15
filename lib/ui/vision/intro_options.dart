@@ -84,12 +84,8 @@ class _IntroVisionState extends State<IntroVision> {
                 _modeDropDownValue == "Stroop"
                     ? buildColorsSelectionRow()
                     : Container(),
-                _modeDropDownValue == "Stroop"
-                    ? buildDurationFromRow()
-                    : Container(),
-                _modeDropDownValue == "Stroop"
-                    ? buildDurationToRow()
-                    : Container(),
+                  buildDurationFromRow(),
+                  buildDurationToRow(),
                 Padding(
                   padding: EdgeInsets.only(top: 28.0),
                 ),

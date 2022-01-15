@@ -550,21 +550,6 @@ class _VisionHomePageState extends State<VisionHomePage> {
         }
       });
     }
-    // return Timer.periodic(
-    //     new Duration(milliseconds: (totalSelectedSeconds * 1000).round()),
-    //     (Timer timer) {
-    //   setState(() {
-    //     int nextIndex = _random.nextInt(selectedRollerWidgetList.length);
-    //     Widget nextWidget = selectedRollerWidgetList[nextIndex];
-    //     if (currentVisionWidgetOnScreen == nextWidget) {
-    //       //making sure all widgets are unique consecutively
-    //       currentVisionWidgetOnScreen = selectedRollerWidgetList[
-    //           (nextIndex + 1) % selectedRollerWidgetList.length];
-    //     } else {
-    //       currentVisionWidgetOnScreen = nextWidget;
-    //     }
-    //   });
-    // });
   }
 
   Timer getStopWatchTimer() {
@@ -690,17 +675,18 @@ class _VisionHomePageState extends State<VisionHomePage> {
               ),
               color: Colors.transparent,
             ),
-            Positioned( //Pre-loading the image asset to avoid flickering
-              // upon loading of asset first-time during runtime
-              top: 0.0,
-              left: 0.0,
-              child: Container(
-                  width: 0.0,
-                  height: 0.0,
-                  child: Image.asset("assets/images/spinner-big-running.png")
-              ),
-            ),
-          ]),
+          ]
+          ),
+        ),
+        Positioned( //Pre-loading the image asset to avoid flickering
+          // upon loading of asset first-time during runtime
+          top: 0.0,
+          left: 0.0,
+          child: Container(
+              width: 0.0,
+              height: 0.0,
+              child: Image.asset("assets/images/spinner-big-running.png")
+          ),
         ),
       ],
     );
