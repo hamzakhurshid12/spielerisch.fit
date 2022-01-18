@@ -12,15 +12,17 @@ class ExercisesData {
   static List<Exercise> dataRecordsEn;
   static List<Exercise> dataRecordsDe;
   static var partnersMap;
+  static var partnersUrlsMap;
   static var _partnersMapJsonStr = '{"tsvhb_vb": 16, "ruthofer": 6, "physioehrenh": 15, "cyclist": 4, "kulmx": 8, "loeherz": 9, "mentalshop": 13, "annamariafitness": 18, "crossfithb": 3, "physiokohlauser": 7, "vkimpuls": 17, "alive365": 1, "neuroboxen": 12, "fitboxen": 11}';
+  static var _partnersUrlsJsonStr = '{"1": "https://www.alive656.com/club/villach/", "2": "https://www.asvoewien.at/", "3": "https://www.crossfit-hartberg.at/", "4": "https://www.der-cyclist.com/", "5": "https://www.dreifuenf.at", "6": "https://www.facebook.com/fitnessgabiruthofer/", "7": "https://physiotherapie-kohlhauser.at/", "8": "https://www.kulmx.at/", "9": "https://www.loewinnenherz.com/", "10": "https://www.binaerschmiede.at/", "11": "https://www.fitboxen.at/", "12": "https://www.neuroboxen.com/", "13": "https://www.mentalshop.at/", "14": "https://www.polizeisv-wien.at/", "15": "http://www.physio-ehrenhoefer.at/", "16": "https://volleyball.tsv-hb.net/", "17": "https://www.vk-impuls.at/"}';
   static int selectedExerciseType = 0;
   static List exerciseTypes = ['All', 'Fitness', 'Boxing', 'Fitboxen', 'Partner', 'Mobility', 'Atmung', 'Achtsamkeit', 'Crossfit'];
 
   static Future<String> getDataFromServer() async {
     try {
-      //Map<String, String> headers = {"Origin": "https://spielerisch.fit"};
       var uriResponse = await http.get(
-          Uri.parse("https://spielerisch.fit/exercises.json"));
+          Uri.parse("http://localhost/projects/exercises.json"));
+          //Uri.parse("https://spielerisch.fit/exercises.json"));
       var responseStr = utf8.decode(uriResponse.bodyBytes);
       prefs.setString("exercises_json", responseStr);
       prefs.commit();
@@ -36,6 +38,7 @@ class ExercisesData {
 
   static void load() async {
     partnersMap = json.decode(_partnersMapJsonStr);
+    partnersUrlsMap = json.decode(_partnersUrlsJsonStr);
     dataStr = await getDataFromServer();
     dataRecordsEn = List<Exercise>();
     dataRecordsDe = List<Exercise>();

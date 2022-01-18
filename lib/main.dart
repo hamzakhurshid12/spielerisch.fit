@@ -39,7 +39,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'default_channel', // id
   'Default Notifications', // title
-  'This channel is used for notifications.', // description
+  description: 'This channel is used for notifications.', // description
   importance: Importance.high,
 );
 
@@ -94,6 +94,16 @@ class MyApp extends StatelessWidget {
     } else {
       AppLocalization.load(Locale("de", "DE"));
     }
+
+    precacheImage(
+      Image.asset("assets/images/spinner-single-window-big-running.png").image,
+      context,
+    );
+    precacheImage(
+      Image.asset("assets/images/spinner-single-window-big.png").image,
+      context,
+    );
+
     return MaterialApp(
       navigatorKey: navKey, // GlobalKey()
       initialRoute: '/',

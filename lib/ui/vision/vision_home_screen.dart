@@ -5,6 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
+import 'package:spielerisch_fit/utils/settings_corner_button.dart';
 
 import '../../main.dart';
 
@@ -80,31 +82,35 @@ class _VisionHomePageState extends State<VisionHomePage> {
 
   bool isFullScreen = false;
 
+  Widget cacheStack;
+
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                icon: "ic_launcher",
-              ),
-            ));
-      }
-    });
+    if(!kIsWeb) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        RemoteNotification notification = message.notification;
+        AndroidNotification android = message.notification?.android;
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channelDescription: channel.description,
+                  icon: "ic_launcher",
+                ),
+              ));
+        }
+      });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-    });
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print('A new onMessageOpenedApp event was published!');
+      });
+    }
 
     clockDuration = "00 : 00";
 
@@ -131,6 +137,12 @@ class _VisionHomePageState extends State<VisionHomePage> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
+    if (kIsWeb){
+      if(screenWidth>1500)
+        screenWidth = screenWidth * 0.3;
+      else if (screenWidth>1000)
+        screenWidth = screenWidth * 0.5;
+    }
     double machineWidth = screenWidth;
     double machineHeight = machineWidth * 1.06;
     toggleWidgetLists();
@@ -145,6 +157,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
               width: MediaQuery.of(context).size.width,
               child: Stack(
                 children: [
+                  cacheStack,
                   Positioned(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -171,8 +184,13 @@ class _VisionHomePageState extends State<VisionHomePage> {
                             : Container(),
                         Padding(
                           padding: EdgeInsets.only(top: 16),
-                          child: _slotMachineVisionMode(
-                              machineWidth, machineHeight),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _slotMachineVisionMode(
+                                  machineWidth, machineHeight),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -223,7 +241,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
                         child: Icon(Icons.arrow_back_ios, color: Colors.white),
                       ),
                       onTap: () {
-                          Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       },
                     ),
                   ),
@@ -252,6 +270,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
                       ),
                     ),
                   ),
+                  SettingsCornerButton(),
                 ],
               ),
             )),
@@ -485,6 +504,14 @@ class _VisionHomePageState extends State<VisionHomePage> {
 
     var bearImagesList = ['assets/images/fitboxenkids-baer-back-blau.png', 'assets/images/fitboxenkids-baer-back-gelb.png', 'assets/images/fitboxenkids-baer-back-gruen.png', 'assets/images/fitboxenkids-baer-back-rot.png', 'assets/images/fitboxenkids-baer-cross-blau.png', 'assets/images/fitboxenkids-baer-cross-gelb.png', 'assets/images/fitboxenkids-baer-cross-gruen.png', 'assets/images/fitboxenkids-baer-cross-rot.png', 'assets/images/fitboxenkids-baer-front-blau.png', 'assets/images/fitboxenkids-baer-front-gelb.png', 'assets/images/fitboxenkids-baer-front-gruen.png', 'assets/images/fitboxenkids-baer-front-rot.png', 'assets/images/fitboxenkids-baer-jab-blau.png', 'assets/images/fitboxenkids-baer-jab-gelb.png', 'assets/images/fitboxenkids-baer-jab-gruen.png', 'assets/images/fitboxenkids-baer-jab-rot.png'];
     visionBearWidgets = bearImagesList.map((e) => Image.asset(e)).toList();
+    //pre-caching all images
+    cacheStack = Container(
+      width: 0,
+      height: 0,
+      child: Column(
+        children: visionBearWidgets,
+      )
+    );
 
     if(VisionHomePage.visionModeType==VisionModeType.bear){
       selectedRollerWidgetList = visionBearWidgets;
@@ -513,7 +540,11 @@ class _VisionHomePageState extends State<VisionHomePage> {
   Future<Timer> getVisionRollingTimer() async {
     isVisionRollingTimerRunning = true;
     while (isVisionRollingTimerRunning){
-      totalSelectedSeconds = (_random.nextInt((VisionHomePage.toDuration - VisionHomePage.fromDuration).round()) + VisionHomePage.fromDuration);
+      if (VisionHomePage.toDuration == VisionHomePage.fromDuration){
+        totalSelectedSeconds = VisionHomePage.fromDuration;
+      } else {
+        totalSelectedSeconds = (_random.nextInt((VisionHomePage.toDuration - VisionHomePage.fromDuration).round()) + VisionHomePage.fromDuration);
+      }
       totalSelectedSeconds = (totalSelectedSeconds - totalSelectedSeconds%100)/1000; //removing milliseconds and centiseconds
       if(stopWatchTimer==null) {
         stopWatchTimer = getStopWatchTimer();
@@ -530,21 +561,6 @@ class _VisionHomePageState extends State<VisionHomePage> {
         }
       });
     }
-    // return Timer.periodic(
-    //     new Duration(milliseconds: (totalSelectedSeconds * 1000).round()),
-    //     (Timer timer) {
-    //   setState(() {
-    //     int nextIndex = _random.nextInt(selectedRollerWidgetList.length);
-    //     Widget nextWidget = selectedRollerWidgetList[nextIndex];
-    //     if (currentVisionWidgetOnScreen == nextWidget) {
-    //       //making sure all widgets are unique consecutively
-    //       currentVisionWidgetOnScreen = selectedRollerWidgetList[
-    //           (nextIndex + 1) % selectedRollerWidgetList.length];
-    //     } else {
-    //       currentVisionWidgetOnScreen = nextWidget;
-    //     }
-    //   });
-    // });
   }
 
   Timer getStopWatchTimer() {
@@ -574,8 +590,8 @@ class _VisionHomePageState extends State<VisionHomePage> {
   Widget _slotMachineVisionMode(double machineWidth, double machineHeight) {
     return Stack(
       children: [
-        // ----------------- Machine ----------------------------------//
-        SizedBox(
+        // ----------------- Machine ----------------------------------/
+         SizedBox(
           width: machineWidth,
           height: machineHeight,
           child: GestureDetector(
@@ -587,7 +603,6 @@ class _VisionHomePageState extends State<VisionHomePage> {
             },
           ),
         ),
-
         // -----------------Roller----------------------------------//
         Positioned(
           top: machineHeight * 0.18,
@@ -671,7 +686,18 @@ class _VisionHomePageState extends State<VisionHomePage> {
               ),
               color: Colors.transparent,
             ),
-          ]),
+          ]
+          ),
+        ),
+        Positioned( //Pre-loading the image asset to avoid flickering
+          // upon loading of asset first-time during runtime
+          top: 0.0,
+          left: 0.0,
+          child: Container(
+              width: 0.0,
+              height: 0.0,
+              child: Image.asset("assets/images/spinner-big-running.png")
+          ),
         ),
       ],
     );

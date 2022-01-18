@@ -1,10 +1,10 @@
-import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/ui/vision/vision_home_screen.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
 import 'package:spielerisch_fit/utils/audio_data.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:spielerisch_fit/utils/settings_corner_button.dart';
 
 import 'audio_home_screen.dart';
 
@@ -127,6 +127,21 @@ class _IntroAudioState extends State<IntroAudio> {
           ),
           Positioned(
             top: 0.0,
+            left: 0.0,
+            child: GestureDetector(
+              child: Container(
+                width: 40,
+                height: 40,
+                color: Color.fromRGBO(148, 189, 60, 1.0),
+                child: Icon(Icons.arrow_back_ios, color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          Positioned(
+            top: 0.0,
             right: 0.0,
             child: GestureDetector(
               child: Container(
@@ -139,6 +154,7 @@ class _IntroAudioState extends State<IntroAudio> {
               },
             ),
           ),
+          SettingsCornerButton(),
         ],
       )),
     );
@@ -148,18 +164,14 @@ class _IntroAudioState extends State<IntroAudio> {
     return SizedBox(
       width: 100.0,
       child: TextButton(
-        onPressed: () {
+        onPressed: () async {
           if(AudioData.getSelectedAudioFiles().length==0){
             final snackBar = SnackBar(content: Text('Please select audio files to continue!'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } else {
-            //AudioHomePage.totalDuration = _durationListMap[_durationDropDownValue];
-            //AudioHomePage.totalDuration = 2.0;
-            /*AudioHomePage.visionModeColors = _colorsListMap[_colorsDropDownValue];
-          AudioHomePage.visionModeType = _modesListMap[_modeDropDownValue];*/
-            //Navigator.of(context).pushNamed("/audio_home");
-            Navigator.of(context).pushNamed("/audio_intro_level_2");
-            //AudioData.getSelectedAudioFiles();
+            final result = await Navigator.of(context).pushNamed('/audio_intro_level_2');
+            if (result == "restart")
+              Navigator.of(context).pop(result);
           }
         },
         child: Text(
@@ -168,177 +180,6 @@ class _IntroAudioState extends State<IntroAudio> {
         ),
         style: TextButton.styleFrom(backgroundColor: ColorHelper.backgroundGreen),
       ),
-    );
-  }
-
-  Row buildModeSelectionRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Text(
-            "Mode: ",
-            style: TextStyle(
-                color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
-            textAlign: TextAlign.right,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-        ),
-        Expanded(
-          child: DropdownButton(
-            hint: _modeDropDownValue == null
-                ? Text(
-                    'None',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  )
-                : Text(
-                    _modeDropDownValue,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  ),
-            dropdownColor: ColorHelper.backgroundCyan,
-            underline: SizedBox(),
-            items: _visionModes
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontSize: 16),
-                      ),
-                    ))
-                .toList(),
-            onChanged: (val) {
-              setState(() {
-                _modeDropDownValue = val;
-              });
-            },
-          ),
-        )
-      ],
-    );
-  }
-
-  Row buildColorsSelectionRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Text(
-            "Colors: ",
-            style: TextStyle(
-                color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
-            textAlign: TextAlign.right,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-        ),
-        Expanded(
-          child: DropdownButton(
-            hint: _colorsDropDownValue == null
-                ? Text(
-                    'None',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  )
-                : Text(
-                    _colorsDropDownValue,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  ),
-            dropdownColor: ColorHelper.backgroundCyan,
-            underline: SizedBox(),
-            items: _colorsList
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontSize: 16),
-                      ),
-                    ))
-                .toList(),
-            onChanged: (val) {
-              setState(() {
-                _colorsDropDownValue = val;
-              });
-            },
-          ),
-        )
-      ],
-    );
-  }
-
-  Row buildDurationSelectionRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Text(
-            "Duration: ",
-            style: TextStyle(
-                color: Colors.white, fontFamily: "Open-Sans", fontSize: 16),
-            textAlign: TextAlign.right,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-        ),
-        Expanded(
-          child: DropdownButton(
-            hint: _durationDropDownValue == null
-                ? Text(
-                    'None',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  )
-                : Text(
-                    _durationDropDownValue,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Open-Sans",
-                        fontSize: 16),
-                  ),
-            dropdownColor: ColorHelper.backgroundCyan,
-            underline: SizedBox(),
-            items: _durationsList
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "Open-Sans",
-                            fontSize: 16),
-                      ),
-                    ))
-                .toList(),
-            onChanged: (val) {
-              setState(() {
-                _durationDropDownValue = val;
-              });
-            },
-          ),
-        )
-      ],
     );
   }
 

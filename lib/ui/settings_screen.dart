@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
+import 'package:spielerisch_fit/ui/intro_screen.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../main.dart';
 
@@ -89,23 +91,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  Padding(
+                  if(IntroScreen.currentMode == AppMode.normal) Padding(
                     padding: EdgeInsets.all(28.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: Text(
-                              "Exercises type: ",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Open-Sans",
-                                  fontSize: 16),
-                              textAlign: TextAlign.center,
-                            ),
+                        Padding(
+                            padding: EdgeInsets.only(right: 30.0),
+                            child: Text(
+                                "Exercises type: ",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: "Open-Sans",
+                                    fontSize: 16),
+                                textAlign: TextAlign.right,
+                              ),
                           ),
-                        Expanded(
-                            child: DropdownButton(
+                        DropdownButton(
                               hint: _dropDownValue == null
                                   ? Text('Type', style: TextStyle(
                                   color: Colors.white,
@@ -132,13 +134,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   _dropDownValue = val;
                                   prefs.setString('selectedExerciseType', _dropDownValue);
                                   ExercisesData.load();
+                                  //re-starting the app
+                                  IntroScreen.skipIntro = true;
                                   Navigator.of(context).pop("restart");
                                 });
                               },
                             ),
-                        )
                       ],
                     ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(28.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            await launch('https://www.spielerisch.fit/legal');
+                          },
+                          child: Text(
+                            "Legal",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Open-Sans",
+                                fontSize: 16,
+                                decoration: TextDecoration.underline
+                            ),
+                            textAlign: TextAlign.center,
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                          onTap: () async {
+                              await launch('https://www.spielerisch.fit/privacy');
+                          },
+                          child: Text(
+                            "Privacy",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Open-Sans",
+                                fontSize: 16,
+                                decoration: TextDecoration.underline
+                            ),
+                            textAlign: TextAlign.center,
+                          )
+                      ),
+                    ],
                   ),
                 ],
               ),
