@@ -389,28 +389,12 @@ class _AudioHomePageState extends State<AudioHomePage> {
     ];
 
     visionBearWidgets = [
-      BlinkWidget(
-        children: <Widget>[
-          Icon(
-            Icons.music_note,
-            size: 72.0,
-          ),
-          Icon(Icons.music_note, size: 72.0, color: Colors.transparent),
-        ],
-        interval: 500,
+      Icon(
+        Icons.music_note,
+        size: 72.0,
       ),
     ];
-
-    //if(AudioHomePage.visionModeType==VisionModeType.bear){
     selectedRollerWidgetList = visionBearWidgets;
-    /*} else {
-      if (AudioHomePage.visionModeColors == VisionColors.oneColor)
-        selectedRollerWidgetList = visionModeOneColorWidgets;
-      else if (AudioHomePage.visionModeColors == VisionColors.twoColors)
-        selectedRollerWidgetList = visionTwoColorWidgets;
-      else
-        selectedRollerWidgetList = visionThreeColorWidgets;
-    }*/
   }
 
   void toggleFullScreen() {
@@ -446,16 +430,19 @@ class _AudioHomePageState extends State<AudioHomePage> {
         await stopAudioPlayer();
         audioPlayer = await audioCache.loop(nextAudio["path"]);
         print("Another time period passed!");
+        setState(() {
+          currentVisionWidgetOnScreen = Container();
+        });
+        Future.delayed(new Duration(milliseconds: 200), () {
+          setState(() {
+            currentVisionWidgetOnScreen = Icon(
+                Icons.music_note,
+                size: 72.0,
+              );
+          });
+        });
       });
     }
-    /*return Timer.periodic(
-        new Duration(milliseconds: (totalSelectedSeconds * 1000).round()),
-        (Timer timer) async {
-          /*int nextIndex = _random.nextInt(selectedAudioFiles.length);
-          Map<String, dynamic> nextAudio = selectedAudioFiles[nextIndex];
-          await stopAudioPlayer();
-          audioPlayer = await audioCache.loop(nextAudio["path"]);*/
-    });*/
   }
 
   Future<void> stopAudioPlayer() async {
