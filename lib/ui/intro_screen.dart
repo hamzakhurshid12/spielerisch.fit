@@ -26,9 +26,6 @@ class IntroScreen extends StatelessWidget {
             fontSize: 16.0
         );
         await ExercisesData.load();
-        Future.delayed(Duration(seconds: 5),(){
-          this.build(context);
-        });
       }
     });
 
@@ -49,38 +46,23 @@ class IntroScreen extends StatelessWidget {
                   text: "Vision Mode",
                   onTap: () async {
                     IntroScreen.isVisionModeActive = true;
-                    final result = await Navigator.pushNamed(context, '/vision_intro');
-                    if(result=="restart")
-                      this.build(context);
-                    else
-                      SystemNavigator.pop();
+                    await Navigator.pushNamed(context, '/vision_intro');
                     IntroScreen.isVisionModeActive = false;
-                    this.build(context);
                   },
                 ),
                 DefaultWhiteTextButton(
                   text: "Normal Mode",
                   onTap: () async {
                     IntroScreen.isVisionModeActive = true;
-                    final result = await Navigator.pushNamed(context, '/home');
-                    if(result=="restart")
-                      this.build(context);
-                    else
-                      SystemNavigator.pop();
-                    this.build(context);
+                    await Navigator.pushNamed(context, '/home');
                   },
                 ),
                 DefaultWhiteTextButton(
                   text: "Audio Mode",
                   onTap: () async {
                     IntroScreen.isVisionModeActive = true;
-                    final result = await Navigator.pushNamed(context, '/audio_intro');
-                    if(result=="restart")
-                      this.build(context);
-                    else
-                      SystemNavigator.pop();
+                    await Navigator.pushNamed(context, '/audio_intro');
                     IntroScreen.isVisionModeActive = false;
-                    this.build(context);
                   },
                 ),
               ],
