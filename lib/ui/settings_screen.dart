@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spielerisch_fit/locale/app_localization.dart';
+import 'package:spielerisch_fit/ui/intro_screen.dart';
 import 'package:spielerisch_fit/utils/ColorsHelper.dart';
 import 'package:spielerisch_fit/utils/exercises_data.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -90,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  Padding(
+                  if(IntroScreen.currentMode == AppMode.normal) Padding(
                     padding: EdgeInsets.all(28.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -133,6 +134,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   _dropDownValue = val;
                                   prefs.setString('selectedExerciseType', _dropDownValue);
                                   ExercisesData.load();
+                                  //re-starting the app
+                                  IntroScreen.skipIntro = true;
                                   Navigator.of(context).pop("restart");
                                 });
                               },

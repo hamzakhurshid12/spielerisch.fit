@@ -12,6 +12,9 @@ class IntroScreen extends StatelessWidget {
   static bool isVisionModeActive = false;
   bool isAudioModeActive = false;
 
+  static AppMode currentMode;
+  static bool skipIntro = false;
+
   @override
   Widget build(BuildContext context) {
     new Future.delayed(const Duration(seconds: 5), () async {
@@ -46,6 +49,7 @@ class IntroScreen extends StatelessWidget {
                   text: "Vision Mode",
                   onTap: () async {
                     IntroScreen.isVisionModeActive = true;
+                    IntroScreen.currentMode = AppMode.vision;
                     await Navigator.pushNamed(context, '/vision_intro');
                     IntroScreen.isVisionModeActive = false;
                   },
@@ -54,14 +58,16 @@ class IntroScreen extends StatelessWidget {
                   text: "Normal Mode",
                   onTap: () async {
                     IntroScreen.isVisionModeActive = true;
-                    await Navigator.pushNamed(context, '/home');
+                    IntroScreen.currentMode = AppMode.normal;
+                    pushNormalModeScreen(context);
                   },
                 ),
                 DefaultWhiteTextButton(
                   text: "Audio Mode",
                   onTap: () async {
                     IntroScreen.isVisionModeActive = true;
-                    await Navigator.pushNamed(context, '/audio_intro');
+                    IntroScreen.currentMode = AppMode.audio;
+                    Navigator.pushNamed(context, '/audio_intro');
                     IntroScreen.isVisionModeActive = false;
                   },
                 ),
@@ -72,6 +78,20 @@ class IntroScreen extends StatelessWidget {
       ),
     );
   }
+
+  void pushNormalModeScreen(context) async {
+      await Navigator.pushNamed(context, '/home');
+      if(IntroScreen.skipIntro){
+        IntroScreen.skipIntro = false;
+        pushNormalModeScreen(context);
+      }
+  }
+}
+
+enum AppMode{
+  vision,
+  normal,
+  audio
 }
 
 

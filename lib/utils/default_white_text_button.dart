@@ -20,7 +20,7 @@ class DefaultWhiteTextButton extends StatelessWidget {
         padding: const EdgeInsets.all(kIsWeb? 10.0: 0.0),
         child: Container(
           height: 50,
-          width: kIsWeb? 250 : 180,
+          width: kIsWeb? 300 : 180,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: Colors.white,
